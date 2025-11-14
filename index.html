@@ -330,6 +330,8 @@
         // Cloudflare Worker 代理地址（已部署）
         const SOLSCAN_PROXY_URL = 'https://solscan-proxy.mdmoto.workers.dev';
         const DEXSCREENER_API = 'https://api.dexscreener.com/latest/dex/tokens';
+        const JUPITER_QUOTE_API = 'https://quote-api.jup.ag/v6/quote';
+        const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'; // Solana USDC
         const TEN_WAN_USD = 100000;
         const DISPLAY_CURRENCY_SYMBOL = '$';
         const tierSnapshot = {
@@ -453,6 +455,36 @@
             }
             const premium = (latestSecondaryPriceUsd / tierSnapshot.intrinsicPrice) * 100;
             premiumNode.textContent = isFinite(premium) ? premium.toFixed(2) + '%' : '暂无数据';
+        }
+
+        async function fetchJupiterPrice() {
+            try {
+                const params = new URLSearchParams({
+                    inputMint: USDC_MINT,
+                    outputMint: MEOW_TOKEN_ADDRESS,
+                    amount: '1000000', // 1 USDC (6 decimals)
+                    slippageBps: '50',
+                    onlyDirectRoutes: 'true'
+                });
+                const url = `${JUPITER_QUOTE_API}?${params.toString()}`;
+                const quote = await fetchJson(url);
+                const route = quote?.data?.[0];
+                if (!route) return null;
+
+                const outAmount = Number(route.outAmount || 0);
+                const outDecimals = route.outputMintDecimals ?? 9;
+                if (!outAmount) return null;
+
+                const tokensPerUsd = outAmount / Math.pow(10, outDecimals);
+                const priceUsd = tokensPerUsd > 0 ? 1 / tokensPerUsd : null;
+                return {
+                    priceUsd,
+                    route
+                };
+            } catch (error) {
+                console.warn('Jupiter quote failed:', error);
+                return null;
+            }
         }
 
         // 链上数据（Solscan via Worker）
@@ -596,8 +628,24 @@
             }
         }
 
-        // 加载喵币价格与成交量（Dexscreener）
+        // 加载喵币价格与成交量（优先 Jupiter，失败再尝试 Dexscreener）
         async function loadTokenMarketData() {
+            let priceUpdated = false;
+            try {
+                const jupiterData = await fetchJupiterPrice();
+                if (jupiterData?.priceUsd) {
+                    document.getElementById('tokenPrice').textContent = formatUSD(jupiterData.priceUsd, 6);
+                    latestSecondaryPriceUsd = jupiterData.priceUsd;
+                    updateSecondaryPremiumDisplay();
+                    document.getElementById('volume24h').textContent = 'Jupiter 路径';
+                    priceUpdated = true;
+                }
+            } catch (error) {
+                console.warn('Jupiter quote error:', error);
+            }
+
+            if (priceUpdated) return;
+
             try {
                 const url = `${DEXSCREENER_API}/${MEOW_TOKEN_ADDRESS}`;
                 console.log('Fetching Dexscreener data from:', url);
@@ -605,14 +653,13 @@
                 const data = await fetchJson(url);
                 console.log('Dexscreener response:', data);
 
-                let topPair = null;
                 if (data && Array.isArray(data.pairs) && data.pairs.length > 0) {
                     const sortedPairs = data.pairs.sort((a, b) => {
                         const liqA = a.liquidity?.usd || 0;
                         const liqB = b.liquidity?.usd || 0;
                         return liqB - liqA;
                     });
-                    topPair = sortedPairs[0] || {};
+                    const topPair = sortedPairs[0] || {};
                     const priceUsd = Number(topPair.priceUsd || 0);
                     const volumeUsd = topPair.volume?.h24 || 0;
 
@@ -625,20 +672,16 @@
                     document.getElementById('volume24h').textContent = volumeUsd
                         ? formatUSD(volumeUsd, 2)
                         : '暂无数据';
-                } else {
-                    console.warn('No pairs found in Dexscreener response');
-                    document.getElementById('tokenPrice').textContent = '暂无价格';
-                    document.getElementById('volume24h').textContent = '暂无数据';
-                    latestSecondaryPriceUsd = null;
-                    updateSecondaryPremiumDisplay();
+                    return;
                 }
             } catch (error) {
-                console.error('加载价格/成交量失败:', error);
-                document.getElementById('tokenPrice').textContent = '加载失败: ' + error.message;
-                document.getElementById('volume24h').textContent = '加载失败';
-                latestSecondaryPriceUsd = null;
-                updateSecondaryPremiumDisplay();
+                console.error('加载 Dexscreener 数据失败:', error);
             }
+
+            document.getElementById('tokenPrice').textContent = '暂无价格';
+            document.getElementById('volume24h').textContent = '暂无数据';
+            latestSecondaryPriceUsd = null;
+            updateSecondaryPremiumDisplay();
         }
 
         async function loadShopStatistics() {
