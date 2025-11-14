@@ -12,73 +12,170 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
         .animate-pulse-slow {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .animate-slide-up {
+            animation: slideUp 0.6s ease-out forwards;
         }
         .stat-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         .number-value {
             font-variant-numeric: tabular-nums;
         }
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #f59e0b, #ef4444, #ec4899) border-box;
+            border: 2px solid transparent;
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+        }
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .stat-card {
+                padding: 1rem !important;
+            }
+            .number-value {
+                font-size: 1.5rem !important;
+            }
+            h1 {
+                font-size: 1.5rem !important;
+            }
+            h2 {
+                font-size: 1.25rem !important;
+            }
+            .mini-card .number-value {
+                font-size: 1.25rem !important;
+            }
+        }
+        /* 表格移动端优化 */
+        @media (max-width: 640px) {
+            table {
+                font-size: 0.875rem;
+            }
+            td, th {
+                padding: 0.5rem 0.25rem !important;
+            }
+            .font-mono {
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
         <!-- Header -->
-        <header class="mb-8 text-center">
-            <div class="flex items-center justify-center gap-3 mb-4">
+        <header class="mb-6 sm:mb-8 text-center animate-slide-up">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-3 sm:mb-4">
                 <img src="https://pub-52cfa058efcc498eb28c64d7af72cf06.r2.dev/logo.png" 
                      alt="Maollar logo" 
-                     class="h-16 w-16 rounded-full border-2 border-amber-400 shadow-lg">
-                <h1 class="text-4xl font-bold text-gray-900">喵乐商城实时数据</h1>
+                     class="h-12 w-12 sm:h-16 sm:w-16 rounded-full border-2 border-amber-400 shadow-lg">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">喵乐商城实时数据</h1>
             </div>
-            <p class="text-gray-600">实时更新 · 数据透明</p>
+            <div class="flex items-center justify-center gap-2 text-sm sm:text-base text-gray-600">
+                <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span>实时更新 · 数据透明</span>
+            </div>
         </header>
 
         <!-- 商城统计数据 -->
-        <section class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span>📊</span> 商城统计
+        <section class="mb-6 sm:mb-8 animate-slide-up" style="animation-delay: 0.1s; opacity: 0;">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2 px-1">
+                <span class="text-2xl">📊</span> 
+                <span>商城统计</span>
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="tierStats">
-                <div class="stat-card rounded-lg p-6 shadow-lg">
-                    <div class="text-sm text-gray-600 mb-2">当前喵币档位</div>
-                    <div class="text-3xl font-bold text-amber-600 number-value" id="currentTier">
-                        <span class="animate-pulse-slow">加载中...</span>
+            
+            <!-- 档位信息 - 移动端2列，大屏4列 -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-3 sm:mb-4" id="tierStats">
+                <div class="stat-card rounded-xl p-4 sm:p-6 shadow-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">🎯</span>
+                        <div class="text-xs sm:text-sm text-gray-600">当前档位</div>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-bold text-amber-600 number-value" id="currentTier">
+                        <span class="animate-pulse-slow">...</span>
                     </div>
                 </div>
-                <div class="stat-card rounded-lg p-6 shadow-lg">
-                    <div class="text-sm text-gray-600 mb-2">每 1 美金获得喵币</div>
-                    <div class="text-3xl font-bold text-blue-600 number-value" id="coinsPerUsd">
-                        <span class="animate-pulse-slow">加载中...</span>
+                <div class="stat-card rounded-xl p-4 sm:p-6 shadow-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">💰</span>
+                        <div class="text-xs sm:text-sm text-gray-600">每$1获得</div>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-bold text-blue-600 number-value" id="coinsPerUsd">
+                        <span class="animate-pulse-slow">...</span>
                     </div>
                 </div>
-                <div class="stat-card rounded-lg p-6 shadow-lg">
-                    <div class="text-sm text-gray-600 mb-2">喵币价格</div>
-                    <div class="text-3xl font-bold text-green-600 number-value" id="intrinsicPrice">
-                        <span class="animate-pulse-slow">加载中...</span>
+                <div class="stat-card rounded-xl p-4 sm:p-6 shadow-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">💎</span>
+                        <div class="text-xs sm:text-sm text-gray-600">喵币价格</div>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-bold text-green-600 number-value" id="intrinsicPrice">
+                        <span class="animate-pulse-slow">...</span>
                     </div>
                 </div>
-                <div class="stat-card rounded-lg p-6 shadow-lg">
-                    <div class="text-sm text-gray-600 mb-2">二级市场交易溢价</div>
-                    <div class="text-3xl font-bold text-purple-600 number-value" id="secondaryPremium">
-                        <span class="animate-pulse-slow">计算中...</span>
+                <div class="stat-card rounded-xl p-4 sm:p-6 shadow-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">📈</span>
+                        <div class="text-xs sm:text-sm text-gray-600">市场溢价</div>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-bold text-purple-600 number-value" id="secondaryPremium">
+                        <span class="animate-pulse-slow">...</span>
                     </div>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div class="stat-card rounded-lg p-6 shadow-lg">
-                    <div class="text-sm text-gray-600 mb-2">总销售额</div>
-                    <div class="text-2xl font-bold text-orange-600 number-value" id="totalSalesValue">
+            
+            <!-- 销售与基金 - 移动端1列，大屏2列 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div class="stat-card gradient-border rounded-xl p-4 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">🏪</span>
+                            <div class="text-sm sm:text-base text-gray-600 font-semibold">总销售额</div>
+                        </div>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-bold text-orange-600 number-value" id="totalSalesValue">
                         <span class="animate-pulse-slow">加载中...</span>
                     </div>
                 </div>
-                <div class="stat-card rounded-lg p-6 shadow-lg">
-                    <div class="text-sm text-gray-600 mb-2">基金池总金额</div>
-                    <div class="text-2xl font-bold text-red-600 number-value" id="fundPoolValue">
+                <div class="stat-card gradient-border rounded-xl p-4 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">🏦</span>
+                            <div class="text-sm sm:text-base text-gray-600 font-semibold">基金池总金额</div>
+                        </div>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-bold text-red-600 number-value" id="fundPoolValue">
                         <span class="animate-pulse-slow">加载中...</span>
                     </div>
                 </div>
@@ -86,42 +183,57 @@
         </section>
 
         <!-- 喵币信息 -->
-        <section class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span>🪙</span> 喵币 (MEOW) 信息
+        <section class="mb-6 sm:mb-8 animate-slide-up" style="animation-delay: 0.2s; opacity: 0;">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2 px-1">
+                <span class="text-2xl">🪙</span> 
+                <span>喵币 (MEOW)</span>
             </h2>
-            <div class="stat-card rounded-lg p-6 shadow-lg mb-4">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <div class="text-sm text-gray-600">代币地址</div>
-                        <div class="text-sm font-mono text-gray-800 break-all" id="tokenAddress">
+            
+            <!-- 代币信息卡片 -->
+            <div class="stat-card rounded-xl p-4 sm:p-6 shadow-lg mb-3 sm:mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pb-4 border-b border-gray-200">
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs sm:text-sm text-gray-600 mb-1">代币地址</div>
+                        <div class="text-xs sm:text-sm font-mono text-gray-800 break-all" id="tokenAddress">
                             9zFnwrEyyNPVgahM5NL4MpUH7iy7L8qNCqRprzj39m9N
                         </div>
                     </div>
                     <a href="https://solscan.io/token/9zFnwrEyyNPVgahM5NL4MpUH7iy7L8qNCqRprzj39m9N" 
                        target="_blank" 
                        rel="noopener noreferrer"
-                       class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
-                        查看详情 ↗
+                       class="flex items-center justify-center gap-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:from-blue-600 hover:to-blue-700 transition shadow-md whitespace-nowrap">
+                        <span>查看详情</span>
+                        <span>↗</span>
                     </a>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <div class="text-sm text-gray-600 mb-2">总供应量</div>
-                        <div class="text-xl font-bold text-gray-900 number-value" id="totalSupply">
+                
+                <!-- 市场数据 - 移动端1列，大屏3列 -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-lg">📦</span>
+                            <div class="text-xs sm:text-sm text-gray-600">总供应量</div>
+                        </div>
+                        <div class="text-lg sm:text-xl font-bold text-gray-900 number-value" id="totalSupply">
                             <span class="animate-pulse-slow">加载中...</span>
                         </div>
                     </div>
-                    <div>
-                        <div class="text-sm text-gray-600 mb-2">二级市场价格</div>
-                        <div class="text-xl font-bold text-green-600 number-value" id="tokenPrice">
-                            <span class="animate-pulse-slow">加载中...</span>
+                    <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-lg">💵</span>
+                            <div class="text-xs sm:text-sm text-gray-600">二级市场价格</div>
+                        </div>
+                        <div class="text-lg sm:text-xl font-bold text-green-700 number-value" id="tokenPrice">
+                            <span class="animate-pulse-slow">查询中...</span>
                         </div>
                     </div>
-                    <div>
-                        <div class="text-sm text-gray-600 mb-2">24小时交易量</div>
-                        <div class="text-xl font-bold text-blue-600 number-value" id="volume24h">
-                            <span class="animate-pulse-slow">加载中...</span>
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-lg">📊</span>
+                            <div class="text-xs sm:text-sm text-gray-600">24h交易量</div>
+                        </div>
+                        <div class="text-lg sm:text-xl font-bold text-blue-700 number-value" id="volume24h">
+                            <span class="animate-pulse-slow">查询中...</span>
                         </div>
                     </div>
                 </div>
@@ -129,22 +241,23 @@
         </section>
 
         <!-- 持仓排行榜 -->
-        <section class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span>🏆</span> 持仓排行榜 (Top 10)
+        <section class="mb-6 sm:mb-8 animate-slide-up" style="animation-delay: 0.3s; opacity: 0;">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2 px-1">
+                <span class="text-2xl">🏆</span> 
+                <span>持仓排行榜</span>
             </h2>
-            <div class="stat-card rounded-lg shadow-lg overflow-hidden">
+            <div class="stat-card rounded-xl shadow-lg overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-amber-500 text-white">
+                    <table class="w-full text-sm sm:text-base">
+                        <thead class="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
                             <tr>
-                                <th class="px-4 py-3 text-left">排名</th>
-                                <th class="px-4 py-3 text-left">地址</th>
-                                <th class="px-4 py-3 text-right">持仓量</th>
-                                <th class="px-4 py-3 text-right">占比</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm">排名</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm">地址</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm">持仓量</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm">占比</th>
                             </tr>
                         </thead>
-                        <tbody id="holdersTable" class="divide-y divide-gray-200">
+                        <tbody id="holdersTable" class="divide-y divide-gray-200 bg-white">
                             <tr>
                                 <td colspan="4" class="px-4 py-8 text-center text-gray-500">
                                     <span class="animate-pulse-slow">加载中...</span>
@@ -157,23 +270,24 @@
         </section>
 
         <!-- 最近交易 -->
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span>📈</span> 最近交易
+        <section class="mb-20 sm:mb-8 animate-slide-up" style="animation-delay: 0.4s; opacity: 0;">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2 px-1">
+                <span class="text-2xl">📈</span> 
+                <span>最近交易</span>
             </h2>
-            <div class="stat-card rounded-lg shadow-lg overflow-hidden">
+            <div class="stat-card rounded-xl shadow-lg overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-blue-500 text-white">
+                    <table class="w-full text-sm sm:text-base">
+                        <thead class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
                             <tr>
-                                <th class="px-4 py-3 text-left">时间</th>
-                                <th class="px-4 py-3 text-left">类型</th>
-                                <th class="px-4 py-3 text-right">数量</th>
-                                <th class="px-4 py-3 text-right">价格</th>
-                                <th class="px-4 py-3 text-left">交易哈希</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm">时间</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm">类型</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm">数量</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm">价格</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm hidden sm:table-cell">交易哈希</th>
                             </tr>
                         </thead>
-                        <tbody id="transactionsTable" class="divide-y divide-gray-200">
+                        <tbody id="transactionsTable" class="divide-y divide-gray-200 bg-white">
                             <tr>
                                 <td colspan="5" class="px-4 py-8 text-center text-gray-500">
                                     <span class="animate-pulse-slow">加载中...</span>
@@ -185,13 +299,28 @@
             </div>
         </section>
 
-        <!-- 刷新按钮 -->
-        <div class="fixed bottom-8 right-8">
+        <!-- 刷新按钮 - 移动端优化 -->
+        <div class="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50">
             <button onclick="loadAllData()" 
-                    class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition">
-                🔄 刷新数据
+                    class="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-full shadow-2xl transition transform hover:scale-105 active:scale-95">
+                <span class="text-lg sm:text-xl">🔄</span>
+                <span class="text-sm sm:text-base">刷新</span>
             </button>
         </div>
+        
+        <!-- 页脚 -->
+        <footer class="mt-12 pb-20 sm:pb-8 text-center animate-slide-up" style="animation-delay: 0.5s; opacity: 0;">
+            <div class="text-xs sm:text-sm text-gray-500 space-y-2">
+                <p>数据每30秒自动更新 · 所有数据公开透明</p>
+                <p class="flex items-center justify-center gap-2">
+                    <span>© 2024 喵乐商城</span>
+                    <span>·</span>
+                    <a href="https://shop.maollar.com" target="_blank" class="text-amber-600 hover:text-amber-700 transition">
+                        访问商城
+                    </a>
+                </p>
+            </div>
+        </footer>
     </div>
 
     <script>
@@ -427,29 +556,34 @@
                 if (Array.isArray(trades) && trades.length > 0) {
                     tbody.innerHTML = '';
                     trades.forEach(item => {
-                        const time = new Date(item.blockTimestamp * 1000).toLocaleString('zh-CN');
+                        const time = new Date(item.blockTimestamp * 1000).toLocaleString('zh-CN', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
                         const isBuy = item.side?.toLowerCase() === 'buy';
-                        const amountToken = formatTokenAmount(item.tokenAmount || item.baseAmount || 0, 4);
+                        const amountToken = formatTokenAmount(item.tokenAmount || item.baseAmount || 0, 2);
                         const priceUsd = item.priceUsd ? formatUSD(item.priceUsd, 6) : 'N/A';
                         const txHash = item.txId || item.transactionAddress || '';
                         const shortHash = txHash.length > 16
-                            ? txHash.substring(0, 8) + '...' + txHash.substring(txHash.length - 8)
+                            ? txHash.substring(0, 6) + '...' + txHash.substring(txHash.length - 4)
                             : txHash;
 
                         const tr = document.createElement('tr');
-                        tr.className = 'hover:bg-gray-50';
+                        tr.className = 'hover:bg-gray-50 transition';
                         tr.innerHTML = `
-                            <td class="px-4 py-3 text-sm">${time}</td>
-                            <td class="px-4 py-3">
-                                <span class="px-2 py-1 rounded text-xs ${isBuy ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700">${time}</td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-3">
+                                <span class="inline-block px-2 py-1 rounded-md text-xs font-semibold ${isBuy ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
                                     ${isBuy ? '买入' : '卖出'}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-right font-mono">${amountToken}</td>
-                            <td class="px-4 py-3 text-right">${priceUsd}</td>
-                            <td class="px-4 py-3">
+                            <td class="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-xs sm:text-sm">${amountToken}</td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm font-semibold">${priceUsd}</td>
+                            <td class="px-2 sm:px-4 py-2 sm:py-3 hidden sm:table-cell">
                                 <a href="https://solscan.io/tx/${txHash}" target="_blank" rel="noopener noreferrer"
-                                   class="text-blue-600 hover:underline font-mono text-xs">
+                                   class="text-blue-600 hover:text-blue-800 hover:underline font-mono text-xs transition">
                                     ${shortHash}
                                 </a>
                             </td>
