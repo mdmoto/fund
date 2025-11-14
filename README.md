@@ -102,11 +102,8 @@ const tierSnapshot = {
 
 - **实时总销售额 / 基金池**：`GET ${API_BASE_URL}/buyer/statistics/realtime`
 - **档位快照**：`index.html` 内部的 `tierSnapshot`（默认第 7 档，单位 10 万美金）
-- **链上数据**: 来自 Solscan v2 API
-  - 代币信息: `https://api.solscan.io/v2/token/meta?address=<mint>`
-  - 持仓排行: `https://api.solscan.io/v2/token/holders?address=<mint>&offset=0&limit=10`
-  - 交易记录: `https://api.solscan.io/v2/token/transactions?address=<mint>&limit=10`
-- **市场数据（价格、24h成交量）**: Dexscreener Public API  
+- **链上数据**: 暂未开放（持仓、供应等信息将在获取可靠 API Key 后恢复）
+- **市场数据（价格、24h成交量、最近交易）**: Dexscreener Public API  
   `https://api.dexscreener.com/latest/dex/tokens/<mint>`
 
 ## 注意事项
