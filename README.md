@@ -70,6 +70,9 @@ ignored:
 // 后端实时统计接口（需替换为生产地址）
 const API_BASE_URL = 'https://shop.maollar.com';
 
+// Solscan 代理（Cloudflare Worker 部署后的地址）
+const SOLSCAN_PROXY_URL = 'https://solscan-proxy.mdmoto.workers.dev';
+
 // 喵币地址（已配置）
 const MEOW_TOKEN_ADDRESS = '9zFnwrEyyNPVgahM5NL4MpUH7iy7L8qNCqRprzj39m9N';
 
