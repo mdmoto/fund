@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>喵乐商城 - 实时数据</title>
+    <link rel="icon" href="https://pub-52cfa058efcc498eb28c64d7af72cf06.r2.dev/logo.png">
+    <link rel="apple-touch-icon" href="https://pub-52cfa058efcc498eb28c64d7af72cf06.r2.dev/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-slow {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .number-value {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <header class="mb-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <img src="https://pub-52cfa058efcc498eb28c64d7af72cf06.r2.dev/logo.png" 
+                     alt="Maollar logo" 
+                     class="h-16 w-16 rounded-full border-2 border-amber-400 shadow-lg">
+                <h1 class="text-4xl font-bold text-gray-900">喵乐商城实时数据</h1>
+            </div>
+            <p class="text-gray-600">实时更新 · 数据透明</p>
+        </header>
+
+        <!-- 商城统计数据 -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span>📊</span> 商城统计
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="tierStats">
+                <div class="stat-card rounded-lg p-6 shadow-lg">
+                    <div class="text-sm text-gray-600 mb-2">当前喵币档位</div>
+                    <div class="text-3xl font-bold text-amber-600 number-value" id="currentTier">
+                        <span class="animate-pulse-slow">加载中...</span>
+                    </div>
+                </div>
+                <div class="stat-card rounded-lg p-6 shadow-lg">
+                    <div class="text-sm text-gray-600 mb-2">每 1 美金获得喵币</div>
+                    <div class="text-3xl font-bold text-blue-600 number-value" id="coinsPerUsd">
+                        <span class="animate-pulse-slow">加载中...</span>
+                    </div>
+                </div>
+                <div class="stat-card rounded-lg p-6 shadow-lg">
+                    <div class="text-sm text-gray-600 mb-2">喵币价格</div>
+                    <div class="text-3xl font-bold text-green-600 number-value" id="intrinsicPrice">
+                        <span class="animate-pulse-slow">加载中...</span>
+                    </div>
+                </div>
+                <div class="stat-card rounded-lg p-6 shadow-lg">
+                    <div class="text-sm text-gray-600 mb-2">二级市场交易溢价</div>
+                    <div class="text-3xl font-bold text-purple-600 number-value" id="secondaryPremium">
+                        <span class="animate-pulse-slow">计算中...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div class="stat-card rounded-lg p-6 shadow-lg">
+                    <div class="text-sm text-gray-600 mb-2">总销售额</div>
+                    <div class="text-2xl font-bold text-orange-600 number-value" id="totalSalesValue">
+                        <span class="animate-pulse-slow">加载中...</span>
+                    </div>
+                </div>
+                <div class="stat-card rounded-lg p-6 shadow-lg">
+                    <div class="text-sm text-gray-600 mb-2">基金池总金额</div>
+                    <div class="text-2xl font-bold text-red-600 number-value" id="fundPoolValue">
+                        <span class="animate-pulse-slow">加载中...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 喵币信息 -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span>🪙</span> 喵币 (MEOW) 信息
+            </h2>
+            <div class="stat-card rounded-lg p-6 shadow-lg mb-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <div class="text-sm text-gray-600">代币地址</div>
+                        <div class="text-sm font-mono text-gray-800 break-all" id="tokenAddress">
+                            9zFnwrEyyNPVgahM5NL4MpUH7iy7L8qNCqRprzj39m9N
+                        </div>
+                    </div>
+                    <a href="https://solscan.io/token/9zFnwrEyyNPVgahM5NL4MpUH7iy7L8qNCqRprzj39m9N" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                        查看详情 ↗
+                    </a>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <div class="text-sm text-gray-600 mb-2">总供应量</div>
+                        <div class="text-xl font-bold text-gray-900 number-value" id="totalSupply">
+                            <span class="animate-pulse-slow">加载中...</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-600 mb-2">二级市场价格</div>
+                        <div class="text-xl font-bold text-green-600 number-value" id="tokenPrice">
+                            <span class="animate-pulse-slow">加载中...</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-600 mb-2">24小时交易量</div>
+                        <div class="text-xl font-bold text-blue-600 number-value" id="volume24h">
+                            <span class="animate-pulse-slow">加载中...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 持仓排行榜 -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span>🏆</span> 持仓排行榜 (Top 10)
+            </h2>
+            <div class="stat-card rounded-lg shadow-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-amber-500 text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left">排名</th>
+                                <th class="px-4 py-3 text-left">地址</th>
+                                <th class="px-4 py-3 text-right">持仓量</th>
+                                <th class="px-4 py-3 text-right">占比</th>
+                            </tr>
+                        </thead>
+                        <tbody id="holdersTable" class="divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                                    <span class="animate-pulse-slow">加载中...</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 最近交易 -->
+        <section>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span>📈</span> 最近交易
+            </h2>
+            <div class="stat-card rounded-lg shadow-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-blue-500 text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left">时间</th>
+                                <th class="px-4 py-3 text-left">类型</th>
+                                <th class="px-4 py-3 text-right">数量</th>
+                                <th class="px-4 py-3 text-right">价格</th>
+                                <th class="px-4 py-3 text-left">交易哈希</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTable" class="divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                                    <span class="animate-pulse-slow">加载中...</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 刷新按钮 -->
+        <div class="fixed bottom-8 right-8">
+            <button onclick="loadAllData()" 
+                    class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition">
+                🔄 刷新数据
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 配置
+        const API_BASE_URL = 'http://localhost:8888'; // 修改为实际的后端地址
+        const MEOW_TOKEN_ADDRESS = '9zFnwrEyyNPVgahM5NL4MpUH7iy7L8qNCqRprzj39m9N';
+        const SOLSCAN_API_BASE = 'https://public-api.solscan.io';
+        const DEXSCREENER_API = 'https://api.dexscreener.com/latest/dex/tokens';
+        const TEN_WAN_USD = 100000;
+        const DISPLAY_CURRENCY_SYMBOL = '$';
+        const tierSnapshot = {
+            level: 7,
+            salesUnit: 21.0,
+            fundUnit: 2.1,
+            coinsPerDollar: 125,
+            tierCoinTotal: 1000,
+            cumulativeCoinTotal: 8000,
+            intrinsicPrice: 0.0002625
+        };
+        let latestSecondaryPriceUsd = null;
+
+        // 格式化数字
+        function formatNumber(num) {
+            if (num === null || num === undefined) return 'N/A';
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(2) + 'B';
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(2) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(2) + 'K';
+            }
+            return num.toLocaleString('zh-CN', { maximumFractionDigits: 2 });
+        }
+
+        // 格式化代币数量
+        function formatTokenAmount(amount, decimals = 9) {
+            if (!amount) return '0';
+            const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+            if (num === 0) return '0';
+            if (num < 0.01) return num.toExponential(2);
+            return num.toLocaleString('zh-CN', { 
+                maximumFractionDigits: decimals 
+            });
+        }
+
+        // 格式化美元金额
+        function formatUSD(value, precision = 4) {
+            if (value === null || value === undefined || isNaN(value)) {
+                return '$0.00';
+            }
+            const num = Number(value);
+            if (num >= 1) {
+                return '$' + num.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+            return '$' + num.toFixed(precision);
+        }
+
+        function formatLargeCurrency(amount) {
+            if (amount === null || amount === undefined || isNaN(amount)) return `${DISPLAY_CURRENCY_SYMBOL}0`;
+            if (amount >= 1e9) return DISPLAY_CURRENCY_SYMBOL + (amount / 1e9).toFixed(2) + 'B';
+            if (amount >= 1e6) return DISPLAY_CURRENCY_SYMBOL + (amount / 1e6).toFixed(2) + 'M';
+            if (amount >= 1e3) return DISPLAY_CURRENCY_SYMBOL + amount.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            return DISPLAY_CURRENCY_SYMBOL + amount.toFixed(2);
+        }
+
+        function renderTierSnapshot() {
+            const tierLabel = `第${tierSnapshot.level}档`;
+            const totalSalesUsd = tierSnapshot.salesUnit * TEN_WAN_USD;
+            const fundPoolUsd = tierSnapshot.fundUnit * TEN_WAN_USD;
+
+            const coinsPerUsd = Number(tierSnapshot.coinsPerDollar || 0).toLocaleString('en-US', {
+                maximumFractionDigits: 6
+            });
+
+            document.getElementById('currentTier').textContent = tierLabel;
+            document.getElementById('coinsPerUsd').textContent = `${coinsPerUsd} 枚`;
+            document.getElementById('intrinsicPrice').textContent = formatUSD(tierSnapshot.intrinsicPrice, 6);
+            document.getElementById('secondaryPremium').textContent = '计算中...';
+            document.getElementById('totalSalesValue').textContent = formatLargeCurrency(totalSalesUsd);
+            document.getElementById('fundPoolValue').textContent = formatLargeCurrency(fundPoolUsd);
+        }
+
+        function updateSecondaryPremiumDisplay() {
+            const premiumNode = document.getElementById('secondaryPremium');
+            if (!premiumNode) return;
+            if (!latestSecondaryPriceUsd || !tierSnapshot.intrinsicPrice) {
+                premiumNode.textContent = '暂无数据';
+                return;
+            }
+            const premium = (latestSecondaryPriceUsd / tierSnapshot.intrinsicPrice) * 100;
+            premiumNode.textContent = isFinite(premium) ? premium.toFixed(2) + '%' : '暂无数据';
+        }
+
+        // 加载喵币信息（使用Solscan API）
+        async function loadTokenInfo() {
+            try {
+                // 获取代币信息
+                const tokenResponse = await fetch(
+                    `${SOLSCAN_API_BASE}/token/meta?tokenAddress=${MEOW_TOKEN_ADDRESS}`
+                );
+                const tokenData = await tokenResponse.json();
+                
+                if (tokenData) {
+                    // 总供应量
+                    const supply = tokenData.supply || 0;
+                    const decimals = tokenData.decimals || 9;
+                    const totalSupply = supply / Math.pow(10, decimals);
+                    document.getElementById('totalSupply').textContent = 
+                        formatTokenAmount(totalSupply, 2) + ' MEOW';
+                    
+                    // 价格信息（需要从其他API获取，Solscan可能不提供价格）
+                    // 这里先显示占位符
+                    document.getElementById('tokenPrice').textContent = '查询中...';
+                    document.getElementById('volume24h').textContent = '查询中...';
+                }
+
+                await Promise.all([
+                    loadTokenMarketData(),
+                    loadTokenHolders(),
+                    loadRecentTransactions()
+                ]);
+            } catch (error) {
+                console.error('加载喵币信息失败:', error);
+                document.getElementById('totalSupply').textContent = '加载失败';
+                document.getElementById('tokenPrice').textContent = '加载失败';
+                document.getElementById('volume24h').textContent = '加载失败';
+            }
+        }
+
+        // 加载喵币价格与成交量（Dexscreener）
+        async function loadTokenMarketData() {
+            try {
+                const response = await fetch(`${DEXSCREENER_API}/${MEOW_TOKEN_ADDRESS}`);
+                const data = await response.json();
+
+                if (data && data.pairs && data.pairs.length > 0) {
+                    // 取流动性最高的交易对
+                    const sortedPairs = data.pairs.sort((a, b) => {
+                        const liqA = a.liquidity?.usd || 0;
+                        const liqB = b.liquidity?.usd || 0;
+                        return liqB - liqA;
+                    });
+                    const pair = sortedPairs[0];
+                    const priceUsd = Number(pair.priceUsd || 0);
+                    const volumeUsd = pair.volume?.h24 || 0;
+
+                    document.getElementById('tokenPrice').textContent = priceUsd
+                        ? formatUSD(priceUsd, 6)
+                        : '暂无价格';
+                    latestSecondaryPriceUsd = priceUsd || null;
+                    updateSecondaryPremiumDisplay();
+
+                    document.getElementById('volume24h').textContent = volumeUsd
+                        ? formatUSD(volumeUsd, 2)
+                        : '暂无数据';
+                } else {
+                    document.getElementById('tokenPrice').textContent = '暂无价格';
+                    document.getElementById('volume24h').textContent = '暂无数据';
+                    latestSecondaryPriceUsd = null;
+                    updateSecondaryPremiumDisplay();
+                }
+            } catch (error) {
+                console.error('加载价格/成交量失败:', error);
+                document.getElementById('tokenPrice').textContent = '加载失败';
+                document.getElementById('volume24h').textContent = '加载失败';
+                latestSecondaryPriceUsd = null;
+                updateSecondaryPremiumDisplay();
+            }
+        }
+
+        async function loadShopStatistics() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/buyer/statistics/realtime`);
+                const result = await response.json();
+
+                if (result.result && result.data) {
+                    const totalSales = Number(result.data.totalSalesAmount || 0);
+                    const fundPool = totalSales * 0.1;
+                    document.getElementById('totalSalesValue').textContent = formatLargeCurrency(totalSales);
+                    document.getElementById('fundPoolValue').textContent = formatLargeCurrency(fundPool);
+                } else {
+                    throw new Error('invalid payload');
+                }
+            } catch (error) {
+                console.error('加载实时销售数据失败:', error);
+                document.getElementById('totalSalesValue').textContent = '加载失败';
+                document.getElementById('fundPoolValue').textContent = '加载失败';
+            }
+        }
+
+        // 加载持仓排行榜
+        async function loadTokenHolders() {
+            try {
+                const response = await fetch(
+                    `${SOLSCAN_API_BASE}/token/holders?tokenAddress=${MEOW_TOKEN_ADDRESS}&offset=0&size=10`
+                );
+                const data = await response.json();
+                
+                const tbody = document.getElementById('holdersTable');
+                if (data && data.length > 0) {
+                    tbody.innerHTML = '';
+                    let totalSupply = 0;
+                    data.forEach(item => {
+                        totalSupply += parseFloat(item.amount || 0);
+                    });
+                    
+                    data.forEach((item, index) => {
+                        const amount = parseFloat(item.amount || 0);
+                        const percentage = totalSupply > 0 ? (amount / totalSupply * 100).toFixed(2) : 0;
+                        const address = item.owner || '';
+                        const shortAddress = address.length > 8 
+                            ? address.substring(0, 4) + '...' + address.substring(address.length - 4)
+                            : address;
+                        
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-gray-50';
+                        tr.innerHTML = `
+                            <td class="px-4 py-3">${index + 1}</td>
+                            <td class="px-4 py-3">
+                                <a href="https://solscan.io/account/${address}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="text-blue-600 hover:underline font-mono text-sm">
+                                    ${shortAddress}
+                                </a>
+                            </td>
+                            <td class="px-4 py-3 text-right font-mono">${formatTokenAmount(amount, 2)}</td>
+                            <td class="px-4 py-3 text-right">${percentage}%</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                                暂无数据
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载持仓排行榜失败:', error);
+                document.getElementById('holdersTable').innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-red-500">
+                            加载失败
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // 加载最近交易
+        async function loadRecentTransactions() {
+            try {
+                const response = await fetch(
+                    `${SOLSCAN_API_BASE}/token/transactions?tokenAddress=${MEOW_TOKEN_ADDRESS}&offset=0&size=10`
+                );
+                const data = await response.json();
+                
+                const tbody = document.getElementById('transactionsTable');
+                if (data && data.length > 0) {
+                    tbody.innerHTML = '';
+                    data.forEach(item => {
+                        const time = new Date(item.blockTime * 1000).toLocaleString('zh-CN');
+                        const type = item.type || '未知';
+                        const amount = formatTokenAmount(item.changeAmount || 0, 2);
+                        const price = item.price ? formatUSD(item.price) : 'N/A';
+                        const signature = item.signature || '';
+                        const shortSig = signature.length > 16 
+                            ? signature.substring(0, 8) + '...' + signature.substring(signature.length - 8)
+                            : signature;
+                        
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-gray-50';
+                        tr.innerHTML = `
+                            <td class="px-4 py-3 text-sm">${time}</td>
+                            <td class="px-4 py-3">
+                                <span class="px-2 py-1 rounded text-xs ${
+                                    type.includes('Buy') || type.includes('买入') 
+                                        ? 'bg-green-100 text-green-800' 
+                                        : 'bg-red-100 text-red-800'
+                                }">
+                                    ${type}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-right font-mono">${amount}</td>
+                            <td class="px-4 py-3 text-right">${price}</td>
+                            <td class="px-4 py-3">
+                                <a href="https://solscan.io/tx/${signature}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="text-blue-600 hover:underline font-mono text-xs">
+                                    ${shortSig}
+                                </a>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                                暂无数据
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载最近交易失败:', error);
+                document.getElementById('transactionsTable').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-4 py-8 text-center text-red-500">
+                            加载失败
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // 加载所有数据
+        async function loadAllData() {
+            renderTierSnapshot();
+            await Promise.all([
+                loadShopStatistics(),
+                loadTokenInfo()
+            ]);
+        }
+
+        // 页面加载时自动加载数据
+        loadAllData();
+
+        // 每30秒自动刷新
+        setInterval(loadAllData, 30000);
+    </script>
+</body>
+</html>
+
