@@ -9,15 +9,15 @@
    - 每 1 美金获得的喵币数量
    - 喵币价格（内在价值，来自档位表）
    - 二级市场交易溢价（Dexscreener 价格 ÷ 内在价格）
-   - 总销售额（按照 10 万美金单位换算）
-   - 基金池总金额 = 销售额 × 10%
+   - 总销售额（实时调取后端 API）
+   - 基金池总金额 = 实时销售额 × 10%
 
 2. **喵币 (MEOW) 信息**
-   - 总供应量（Solscan）
+   - 总供应量（Solscan v2，通过 Cloudflare Worker 代理 + API Key）
    - 二级市场价格（Dexscreener）
    - 24小时交易量（Dexscreener）
-   - 持仓排行榜 (Top 10)
-   - 最近交易记录
+   - 持仓排行榜 (Top 10，Solscan)
+   - 最近交易记录（Solscan）
 
 ## 后端接口
 
@@ -102,9 +102,22 @@ const tierSnapshot = {
 
 - **实时总销售额 / 基金池**：`GET ${API_BASE_URL}/buyer/statistics/realtime`
 - **档位快照**：`index.html` 内部的 `tierSnapshot`（默认第 7 档，单位 10 万美金）
-- **链上数据**: 暂未开放（持仓、供应等信息将在获取可靠 API Key 后恢复）
-- **市场数据（价格、24h成交量、最近交易）**: Dexscreener Public API  
+- **链上数据（供应 / 持仓 / 交易）**：Solscan v2 API，通过 Cloudflare Worker 代理并添加 `SOLSCAN_API_KEY`（Bearer Token）
+  - `/v2/token/meta`
+  - `/v2/token/holders`
+  - `/v2/token/transactions`
+- **市场数据（价格、24h成交量）**: Dexscreener Public API  
   `https://api.dexscreener.com/latest/dex/tokens/<mint>`
+
+## Solscan API Key 配置
+
+1. 确保已经获取 Solscan v2 的 API Key
+2. 在 Cloudflare Worker 项目目录中执行：
+   ```bash
+   wrangler secret put SOLSCAN_API_KEY
+   # 然后粘贴 API Key
+   ```
+3. 重新部署 Worker：`wrangler deploy`
 
 ## 注意事项
 

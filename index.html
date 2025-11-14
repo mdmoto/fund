@@ -390,6 +390,17 @@
             return DISPLAY_CURRENCY_SYMBOL + amount.toFixed(2);
         }
 
+        function buildSolscanProxyUrl(path, params = {}) {
+            const proxyUrl = new URL(SOLSCAN_PROXY_URL);
+            proxyUrl.searchParams.set('path', path);
+            Object.entries(params || {}).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    proxyUrl.searchParams.set(key, value);
+                }
+            });
+            return proxyUrl.toString();
+        }
+
         // 构建 Solscan 代理 URL
         async function fetchJson(url, options = {}) {
             const response = await fetch(url, {
@@ -431,8 +442,6 @@
             document.getElementById('coinsPerUsd').textContent = `${coinsPerUsd} 枚`;
             document.getElementById('intrinsicPrice').textContent = formatUSD(tierSnapshot.intrinsicPrice, 6);
             document.getElementById('secondaryPremium').textContent = '计算中...';
-            document.getElementById('totalSalesValue').textContent = formatLargeCurrency(totalSalesUsd);
-            document.getElementById('fundPoolValue').textContent = formatLargeCurrency(fundPoolUsd);
         }
 
         function updateSecondaryPremiumDisplay() {
@@ -446,17 +455,144 @@
             premiumNode.textContent = isFinite(premium) ? premium.toFixed(2) + '%' : '暂无数据';
         }
 
-        function markOnChainUnavailable() {
-            document.getElementById('totalSupply').textContent = '暂不可用（等待链上 API）';
-            const holdersTable = document.getElementById('holdersTable');
-            if (holdersTable) {
-                holdersTable.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">
-                            持仓排行榜将在取得链上数据接口后开放
+        // 链上数据（Solscan via Worker）
+        async function loadTokenInfo() {
+            try {
+                const metaUrl = buildSolscanProxyUrl('/v2/token/meta', { address: MEOW_TOKEN_ADDRESS });
+                const metaPayload = await fetchJson(metaUrl);
+                const tokenMeta = metaPayload?.data || metaPayload || {};
+                const metaInfo = tokenMeta.tokenInfo || tokenMeta || {};
+
+                if (metaInfo && metaInfo.supply !== undefined) {
+                    const supplyRaw = metaInfo.supply ?? metaInfo.tokenAuthorityData?.supply ?? 0;
+                    const decimals = metaInfo.decimals ?? 9;
+                    const totalSupply = supplyRaw / Math.pow(10, decimals);
+                    document.getElementById('totalSupply').textContent = formatTokenAmount(totalSupply, 2) + ' MEOW';
+                } else {
+                    document.getElementById('totalSupply').textContent = '暂无供应数据';
+                }
+
+                await Promise.all([
+                    loadTokenHolders(),
+                    loadRecentTransactions()
+                ]);
+            } catch (error) {
+                console.error('加载链上代币信息失败:', error);
+                showOnChainUnavailable('链上数据获取失败');
+            }
+        }
+
+        async function loadTokenHolders() {
+            try {
+                const url = buildSolscanProxyUrl('/v2/token/holders', {
+                    address: MEOW_TOKEN_ADDRESS,
+                    limit: 10,
+                    offset: 0
+                });
+                const data = await fetchJson(url);
+                const holders = data?.data?.items || data?.data || data?.result || [];
+
+                if (!Array.isArray(holders) || holders.length === 0) {
+                    showHoldersPlaceholder('暂无持仓数据');
+                    return;
+                }
+
+                const tbody = document.getElementById('holdersTable');
+                tbody.innerHTML = '';
+                let totalAmount = 0;
+                holders.forEach(item => {
+                    totalAmount += Number(item.amount || item.tokenAmount || 0);
+                });
+
+                holders.forEach((item, index) => {
+                    const amount = Number(item.amount || item.tokenAmount || 0);
+                    const percentage = totalAmount > 0 ? (amount / totalAmount * 100).toFixed(2) : '0.00';
+                    const address = item.owner || item.address || '';
+                    const shortAddress = address.length > 10
+                        ? `${address.slice(0, 4)}...${address.slice(-4)}`
+                        : address;
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50 transition';
+                    tr.innerHTML = `
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-gray-700">${index + 1}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <a href="https://solscan.io/account/${address}" target="_blank" rel="noopener noreferrer"
+                               class="text-blue-600 hover:underline font-mono text-xs sm:text-sm">
+                                ${shortAddress}
+                            </a>
                         </td>
-                    </tr>
-                `;
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-xs sm:text-sm">
+                            ${formatTokenAmount(amount, 2)}
+                        </td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm">
+                            ${percentage}%
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('加载持仓排行榜失败:', error);
+                showHoldersPlaceholder(`加载失败：${error.message}`);
+            }
+        }
+
+        async function loadRecentTransactions() {
+            try {
+                const url = buildSolscanProxyUrl('/v2/token/transactions', {
+                    address: MEOW_TOKEN_ADDRESS,
+                    limit: 10
+                });
+                const data = await fetchJson(url);
+                const records = data?.data?.items || data?.data || data?.result || [];
+
+                if (!Array.isArray(records) || records.length === 0) {
+                    showTransactionsPlaceholder('暂时没有交易记录');
+                    return;
+                }
+
+                const tbody = document.getElementById('transactionsTable');
+                tbody.innerHTML = '';
+                records.forEach(item => {
+                    const blockTime = item.blockTime || item.block_time || 0;
+                    const timeText = blockTime
+                        ? new Date(blockTime * 1000).toLocaleString('zh-CN')
+                        : '未知时间';
+                    const type = item.type || '未知';
+                    const amount = formatTokenAmount(item.changeAmount || item.amount || 0, 2);
+                    const price = item.price ? formatUSD(item.price) : 'N/A';
+                    const signature = item.signature || '';
+                    const shortSig = signature.length > 16
+                        ? `${signature.slice(0, 8)}...${signature.slice(-6)}`
+                        : signature;
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50 transition';
+                    tr.innerHTML = `
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700">${timeText}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <span class="inline-block px-2 py-1 rounded-md text-xs font-semibold ${
+                                type.toLowerCase().includes('buy') || type.includes('买')
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-red-100 text-red-700'
+                            }">
+                                ${type}
+                            </span>
+                        </td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-xs sm:text-sm">${amount}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm font-semibold">${price}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 hidden sm:table-cell">
+                            <a href="https://solscan.io/tx/${signature}" target="_blank" rel="noopener noreferrer"
+                               class="text-blue-600 hover:text-blue-800 hover:underline font-mono text-xs transition">
+                                ${shortSig}
+                            </a>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('加载链上交易失败:', error);
+                showTransactionsPlaceholder(`加载失败：${error.message}`);
             }
         }
 
@@ -495,14 +631,6 @@
                     document.getElementById('volume24h').textContent = '暂无数据';
                     latestSecondaryPriceUsd = null;
                     updateSecondaryPremiumDisplay();
-                    showTransactionsPlaceholder('暂无交易数据');
-                    return;
-                }
-
-                if (topPair?.pairAddress && topPair?.chainId) {
-                    await loadDexTrades(topPair.chainId, topPair.pairAddress);
-                } else {
-                    showTransactionsPlaceholder('暂无交易数据');
                 }
             } catch (error) {
                 console.error('加载价格/成交量失败:', error);
@@ -510,7 +638,6 @@
                 document.getElementById('volume24h').textContent = '加载失败';
                 latestSecondaryPriceUsd = null;
                 updateSecondaryPremiumDisplay();
-                showTransactionsPlaceholder('暂无交易数据');
             }
         }
 
@@ -534,7 +661,18 @@
             }
         }
 
-        // Dexscreener 最近交易
+        function showHoldersPlaceholder(message) {
+            const holdersTable = document.getElementById('holdersTable');
+            if (!holdersTable) return;
+            holdersTable.innerHTML = `
+                <tr>
+                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                        ${message}
+                    </td>
+                </tr>
+            `;
+        }
+
         function showTransactionsPlaceholder(message) {
             document.getElementById('transactionsTable').innerHTML = `
                 <tr>
@@ -545,67 +683,19 @@
             `;
         }
 
-        async function loadDexTrades(chainId, pairAddress) {
-            try {
-                const tradesUrl = `https://api.dexscreener.com/latest/dex/trades/${chainId}/${pairAddress}?limit=10`;
-                console.log('Fetching trades:', tradesUrl);
-                const tradesData = await fetchJson(tradesUrl);
-                const trades = tradesData?.trades || tradesData?.data || tradesData;
-                const tbody = document.getElementById('transactionsTable');
-
-                if (Array.isArray(trades) && trades.length > 0) {
-                    tbody.innerHTML = '';
-                    trades.forEach(item => {
-                        const time = new Date(item.blockTimestamp * 1000).toLocaleString('zh-CN', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
-                        const isBuy = item.side?.toLowerCase() === 'buy';
-                        const amountToken = formatTokenAmount(item.tokenAmount || item.baseAmount || 0, 2);
-                        const priceUsd = item.priceUsd ? formatUSD(item.priceUsd, 6) : 'N/A';
-                        const txHash = item.txId || item.transactionAddress || '';
-                        const shortHash = txHash.length > 16
-                            ? txHash.substring(0, 6) + '...' + txHash.substring(txHash.length - 4)
-                            : txHash;
-
-                        const tr = document.createElement('tr');
-                        tr.className = 'hover:bg-gray-50 transition';
-                        tr.innerHTML = `
-                            <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700">${time}</td>
-                            <td class="px-2 sm:px-4 py-2 sm:py-3">
-                                <span class="inline-block px-2 py-1 rounded-md text-xs font-semibold ${isBuy ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                                    ${isBuy ? '买入' : '卖出'}
-                                </span>
-                            </td>
-                            <td class="px-2 sm:px-4 py-2 sm:py-3 text-right font-mono text-xs sm:text-sm">${amountToken}</td>
-                            <td class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm font-semibold">${priceUsd}</td>
-                            <td class="px-2 sm:px-4 py-2 sm:py-3 hidden sm:table-cell">
-                                <a href="https://solscan.io/tx/${txHash}" target="_blank" rel="noopener noreferrer"
-                                   class="text-blue-600 hover:text-blue-800 hover:underline font-mono text-xs transition">
-                                    ${shortHash}
-                                </a>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                } else {
-                    showTransactionsPlaceholder('暂无交易数据');
-                }
-            } catch (error) {
-                console.error('加载最近交易失败:', error);
-                showTransactionsPlaceholder(`加载失败: ${error.message}`);
-            }
+        function showOnChainUnavailable(message = '链上数据暂不可用') {
+            document.getElementById('totalSupply').textContent = message;
+            showHoldersPlaceholder(message);
+            showTransactionsPlaceholder(message);
         }
 
         // 加载所有数据
         async function loadAllData() {
             renderTierSnapshot();
-            markOnChainUnavailable();
             await Promise.all([
                 loadShopStatistics(),
-                loadTokenMarketData()
+                loadTokenMarketData(),
+                loadTokenInfo()
             ]);
         }
 

@@ -57,12 +57,18 @@ export default {
       console.log('Proxying to:', solscanUrl);
 
       // 请求 Solscan API
+      const headers = {
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (compatible; Maollar/1.0)',
+      };
+
+      if (env && env.SOLSCAN_API_KEY) {
+        headers.Authorization = `Bearer ${env.SOLSCAN_API_KEY}`;
+      }
+
       const response = await fetch(solscanUrl, {
         method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'Mozilla/5.0 (compatible; Maollar/1.0)',
-        },
+        headers,
         cf: {
           // Cloudflare 缓存配置
           cacheTtl: 30, // 缓存 30 秒

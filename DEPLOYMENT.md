@@ -16,7 +16,16 @@ npm install wrangler --save-dev
 wrangler login
 ```
 
-### 1.3 部署 Worker
+### 1.3 配置 Solscan API Key（必填）
+
+Solscan v2 需要 Bearer Token，使用 Cloudflare Secret 方式保存：
+
+```bash
+wrangler secret put SOLSCAN_API_KEY
+# 粘贴从 Solscan 获取的 token
+```
+
+### 1.4 部署 Worker
 
 在 `realtime-dashboard` 目录下执行：
 
@@ -29,7 +38,7 @@ wrangler deploy
 ✨  Deployed to https://solscan-proxy.your-account.workers.dev
 ```
 
-### 1.4 记录 Worker URL
+### 1.5 记录 Worker URL
 
 复制部署后的 Worker URL，例如：
 - `https://solscan-proxy.your-account.workers.dev`
