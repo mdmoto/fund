@@ -1,6 +1,6 @@
 # Cloudflare Worker 部署指南
 
-## 步骤 1: 部署 Solscan 代理 Worker
+## 步骤 1: 部署数据代理 Worker（Solscan + Jupiter）
 
 ### 1.1 安装 Wrangler CLI
 
@@ -38,7 +38,7 @@ wrangler deploy
 ✨  Deployed to https://solscan-proxy.your-account.workers.dev
 ```
 
-### 1.5 记录 Worker URL
+### 1.5 记录 Worker URL（Jupiter 同样复用该地址，通过 `service=jupiter` 参数区分）
 
 复制部署后的 Worker URL，例如：
 - `https://solscan-proxy.your-account.workers.dev`
