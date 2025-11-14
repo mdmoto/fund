@@ -198,7 +198,9 @@
         // 配置
         const API_BASE_URL = 'https://shop.maollar.com'; // EC2 buyer-api 外网入口
         const MEOW_TOKEN_ADDRESS = '9zFnwrEyyNPVgahM5NL4MpUH7iy7L8qNCqRprzj39m9N';
-        const SOLSCAN_API_BASE = 'https://api.solscan.io';
+        // Cloudflare Worker 代理地址（部署后需要替换为实际地址）
+        // 例如: https://solscan-proxy.your-account.workers.dev
+        const SOLSCAN_PROXY_URL = 'https://solscan-proxy.your-account.workers.dev';
         const DEXSCREENER_API = 'https://api.dexscreener.com/latest/dex/tokens';
         const TEN_WAN_USD = 100000;
         const DISPLAY_CURRENCY_SYMBOL = '$';
@@ -260,6 +262,22 @@
             return DISPLAY_CURRENCY_SYMBOL + amount.toFixed(2);
         }
 
+        // 构建 Solscan 代理 URL
+        function buildSolscanProxyUrl(path, params = {}) {
+            const proxyUrl = new URL(SOLSCAN_PROXY_URL);
+            proxyUrl.searchParams.set('path', path);
+            if (params.address) {
+                proxyUrl.searchParams.set('address', params.address);
+            }
+            // 添加其他参数
+            Object.keys(params).forEach(key => {
+                if (key !== 'address') {
+                    proxyUrl.searchParams.set(key, params[key]);
+                }
+            });
+            return proxyUrl.toString();
+        }
+
         async function fetchJson(url, options = {}) {
             const response = await fetch(url, {
                 method: 'GET',
@@ -315,12 +333,12 @@
             premiumNode.textContent = isFinite(premium) ? premium.toFixed(2) + '%' : '暂无数据';
         }
 
-        // 加载喵币信息（使用 Solscan v2 API）
+        // 加载喵币信息（使用 Solscan v2 API via Proxy）
         async function loadTokenInfo() {
             try {
-                const metaPayload = await fetchJson(
-                    `${SOLSCAN_API_BASE}/v2/token/meta?address=${MEOW_TOKEN_ADDRESS}`
-                );
+                const metaUrl = buildSolscanProxyUrl('/v2/token/meta', { address: MEOW_TOKEN_ADDRESS });
+                console.log('Fetching token meta via proxy:', metaUrl);
+                const metaPayload = await fetchJson(metaUrl);
                 const tokenMeta = metaPayload?.data || metaPayload || {};
                 console.log('Token meta data:', tokenMeta);
                 
@@ -420,8 +438,12 @@
         // 加载持仓排行榜
         async function loadTokenHolders() {
             try {
-                const url = `${SOLSCAN_API_BASE}/v2/token/holders?address=${MEOW_TOKEN_ADDRESS}&offset=0&limit=10`;
-                console.log('Fetching holders from:', url);
+                const url = buildSolscanProxyUrl('/v2/token/holders', { 
+                    address: MEOW_TOKEN_ADDRESS,
+                    offset: 0,
+                    limit: 10
+                });
+                console.log('Fetching holders via proxy:', url);
                 
                 const data = await fetchJson(url);
                 console.log('Holders response:', data);
@@ -485,8 +507,11 @@
         // 加载最近交易
         async function loadRecentTransactions() {
             try {
-                const url = `${SOLSCAN_API_BASE}/v2/token/transactions?address=${MEOW_TOKEN_ADDRESS}&limit=10`;
-                console.log('Fetching transactions from:', url);
+                const url = buildSolscanProxyUrl('/v2/token/transactions', {
+                    address: MEOW_TOKEN_ADDRESS,
+                    limit: 10
+                });
+                console.log('Fetching transactions via proxy:', url);
                 
                 const data = await fetchJson(url);
                 console.log('Transactions response:', data);
