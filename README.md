@@ -87,9 +87,9 @@ const tierSnapshot = {
 
 ### 部署
 
-1. 将 `index.html` 上传到你的Web服务器
-2. 确保后端API地址可访问
-3. 如果跨域，需要配置CORS
+1. 将 `index.html` 上传到你的 Web 服务器（最终域名：`https://fund.maollar.com`）
+2. 确保后端 API 地址可访问，并已允许该域名跨域
+3. 如果跨域报错，请在 buyer-api（或 Nginx 代理层）中开放 `Access-Control-Allow-Origin`
 
 ### 自动刷新
 
@@ -99,10 +99,10 @@ const tierSnapshot = {
 
 - **实时总销售额 / 基金池**：`GET ${API_BASE_URL}/buyer/statistics/realtime`
 - **档位快照**：`index.html` 内部的 `tierSnapshot`（默认第 7 档，单位 10 万美金）
-- **链上数据**: 来自Solscan Public API
-  - 代币信息: `https://public-api.solscan.io/token/meta`
-  - 持仓排行: `https://public-api.solscan.io/token/holders`
-  - 交易记录: `https://public-api.solscan.io/token/transactions`
+- **链上数据**: 来自 Solscan v2 API
+  - 代币信息: `https://api.solscan.io/v2/token/meta?address=<mint>`
+  - 持仓排行: `https://api.solscan.io/v2/token/holders?address=<mint>&offset=0&limit=10`
+  - 交易记录: `https://api.solscan.io/v2/token/transactions?address=<mint>&limit=10`
 - **市场数据（价格、24h成交量）**: Dexscreener Public API  
   `https://api.dexscreener.com/latest/dex/tokens/<mint>`
 

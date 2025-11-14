@@ -198,7 +198,7 @@
         // 配置
         const API_BASE_URL = 'https://shop.maollar.com'; // EC2 buyer-api 外网入口
         const MEOW_TOKEN_ADDRESS = '9zFnwrEyyNPVgahM5NL4MpUH7iy7L8qNCqRprzj39m9N';
-        const SOLSCAN_API_BASE = 'https://public-api.solscan.io';
+        const SOLSCAN_API_BASE = 'https://api.solscan.io';
         const DEXSCREENER_API = 'https://api.dexscreener.com/latest/dex/tokens';
         const TEN_WAN_USD = 100000;
         const DISPLAY_CURRENCY_SYMBOL = '$';
@@ -260,6 +260,33 @@
             return DISPLAY_CURRENCY_SYMBOL + amount.toFixed(2);
         }
 
+        async function fetchJson(url, options = {}) {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    ...(options.headers || {})
+                },
+                ...options
+            });
+
+            const rawText = await response.text();
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText || ''} ${rawText.slice(0, 80)}`);
+            }
+
+            if (!rawText) {
+                return {};
+            }
+
+            try {
+                return JSON.parse(rawText);
+            } catch (error) {
+                throw new Error(`JSON 解析失败: ${error.message}`);
+            }
+        }
+
         function renderTierSnapshot() {
             const tierLabel = `第${tierSnapshot.level}档`;
             const totalSalesUsd = tierSnapshot.salesUnit * TEN_WAN_USD;
@@ -288,44 +315,31 @@
             premiumNode.textContent = isFinite(premium) ? premium.toFixed(2) + '%' : '暂无数据';
         }
 
-        // 加载喵币信息（使用Solscan API）
+        // 加载喵币信息（使用 Solscan v2 API）
         async function loadTokenInfo() {
             try {
-                // 获取代币信息
-                const tokenResponse = await fetch(
-                    `${SOLSCAN_API_BASE}/token/meta?tokenAddress=${MEOW_TOKEN_ADDRESS}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                        }
-                    }
+                const metaPayload = await fetchJson(
+                    `${SOLSCAN_API_BASE}/v2/token/meta?address=${MEOW_TOKEN_ADDRESS}`
                 );
+                const tokenMeta = metaPayload?.data || metaPayload || {};
+                console.log('Token meta data:', tokenMeta);
                 
-                if (!tokenResponse.ok) {
-                    throw new Error(`HTTP ${tokenResponse.status}: ${tokenResponse.statusText}`);
-                }
-                
-                const tokenData = await tokenResponse.json();
-                console.log('Token meta data:', tokenData);
-                
-                if (tokenData && tokenData.supply !== undefined) {
-                    // 总供应量
-                    const supply = tokenData.supply || 0;
-                    const decimals = tokenData.decimals || 9;
-                    const totalSupply = supply / Math.pow(10, decimals);
-                    document.getElementById('totalSupply').textContent = 
+                const metaInfo = tokenMeta.tokenInfo || tokenMeta || {};
+                if (metaInfo && (metaInfo.supply !== undefined || tokenMeta.supply !== undefined)) {
+                    const supplyRaw = metaInfo.supply ?? tokenMeta.supply ?? 0;
+                    const decimals = metaInfo.decimals ?? tokenMeta.decimals ?? 9;
+                    const totalSupply = supplyRaw / Math.pow(10, decimals);
+                    document.getElementById('totalSupply').textContent =
                         formatTokenAmount(totalSupply, 2) + ' MEOW';
                 } else {
-                    console.warn('Token meta response format unexpected:', tokenData);
+                    console.warn('Token meta response format unexpected:', tokenMeta);
                     document.getElementById('totalSupply').textContent = '数据格式异常';
                 }
                 
-                // 价格信息（需要从其他API获取，Solscan可能不提供价格）
+                // 价格信息（Dexscreener 提供）
                 document.getElementById('tokenPrice').textContent = '查询中...';
                 document.getElementById('volume24h').textContent = '查询中...';
 
-                // 并行加载所有数据
                 await Promise.all([
                     loadTokenMarketData(),
                     loadTokenHolders(),
@@ -345,28 +359,16 @@
                 const url = `${DEXSCREENER_API}/${MEOW_TOKEN_ADDRESS}`;
                 console.log('Fetching Dexscreener data from:', url);
                 
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
+                const data = await fetchJson(url);
                 console.log('Dexscreener response:', data);
 
-                if (data && data.pairs && data.pairs.length > 0) {
-                    // 取流动性最高的交易对
+                if (data && Array.isArray(data.pairs) && data.pairs.length > 0) {
                     const sortedPairs = data.pairs.sort((a, b) => {
                         const liqA = a.liquidity?.usd || 0;
                         const liqB = b.liquidity?.usd || 0;
                         return liqB - liqA;
                     });
-                    const pair = sortedPairs[0];
+                    const pair = sortedPairs[0] || {};
                     const priceUsd = Number(pair.priceUsd || 0);
                     const volumeUsd = pair.volume?.h24 || 0;
 
@@ -418,35 +420,25 @@
         // 加载持仓排行榜
         async function loadTokenHolders() {
             try {
-                const url = `${SOLSCAN_API_BASE}/token/holders?tokenAddress=${MEOW_TOKEN_ADDRESS}&offset=0&size=10`;
+                const url = `${SOLSCAN_API_BASE}/v2/token/holders?address=${MEOW_TOKEN_ADDRESS}&offset=0&limit=10`;
                 console.log('Fetching holders from:', url);
                 
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
+                const data = await fetchJson(url);
                 console.log('Holders response:', data);
                 
+                const holders = data?.data?.items || data?.data || data?.result || data;
                 const tbody = document.getElementById('holdersTable');
-                if (data && Array.isArray(data) && data.length > 0) {
+                if (holders && Array.isArray(holders) && holders.length > 0) {
                     tbody.innerHTML = '';
                     let totalSupply = 0;
-                    data.forEach(item => {
+                    holders.forEach(item => {
                         totalSupply += parseFloat(item.amount || 0);
                     });
                     
-                    data.forEach((item, index) => {
+                    holders.forEach((item, index) => {
                         const amount = parseFloat(item.amount || 0);
                         const percentage = totalSupply > 0 ? (amount / totalSupply * 100).toFixed(2) : 0;
-                        const address = item.owner || '';
+                        const address = item.owner || item.address || '';
                         const shortAddress = address.length > 8 
                             ? address.substring(0, 4) + '...' + address.substring(address.length - 4)
                             : address;
@@ -469,7 +461,7 @@
                         tbody.appendChild(tr);
                     });
                 } else {
-                    console.warn('Holders data format unexpected:', data);
+                    console.warn('Holders data format unexpected:', holders);
                     tbody.innerHTML = `
                         <tr>
                             <td colspan="4" class="px-4 py-8 text-center text-gray-500">
@@ -493,27 +485,17 @@
         // 加载最近交易
         async function loadRecentTransactions() {
             try {
-                const url = `${SOLSCAN_API_BASE}/token/transactions?tokenAddress=${MEOW_TOKEN_ADDRESS}&offset=0&size=10`;
+                const url = `${SOLSCAN_API_BASE}/v2/token/transactions?address=${MEOW_TOKEN_ADDRESS}&limit=10`;
                 console.log('Fetching transactions from:', url);
                 
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
+                const data = await fetchJson(url);
                 console.log('Transactions response:', data);
                 
+                const records = data?.data?.items || data?.data || data?.result || data;
                 const tbody = document.getElementById('transactionsTable');
-                if (data && Array.isArray(data) && data.length > 0) {
+                if (records && Array.isArray(records) && records.length > 0) {
                     tbody.innerHTML = '';
-                    data.forEach(item => {
+                    records.forEach(item => {
                         const time = new Date(item.blockTime * 1000).toLocaleString('zh-CN');
                         const type = item.type || '未知';
                         const amount = formatTokenAmount(item.changeAmount || 0, 2);
@@ -550,7 +532,7 @@
                         tbody.appendChild(tr);
                     });
                 } else {
-                    console.warn('Transactions data format unexpected:', data);
+                    console.warn('Transactions data format unexpected:', records);
                     tbody.innerHTML = `
                         <tr>
                             <td colspan="5" class="px-4 py-8 text-center text-gray-500">
