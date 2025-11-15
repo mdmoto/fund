@@ -107,7 +107,7 @@ const tierSnapshot = {
   - `/v2/token/holders`
   - `/v2/token/transactions`
 - **市场数据（价格、24h成交量）**:  
-  - 优先：Jupiter Quote API（通过 Cloudflare Worker 代理）  
+  - 优先：Jupiter Quote API `https://quote-api.jup.ag/v6/quote`  
   - 兜底：Dexscreener Public API `https://api.dexscreener.com/latest/dex/tokens/<mint>`
 
 ## Solscan API Key 配置

@@ -330,7 +330,7 @@
         // Cloudflare Worker 代理地址（已部署）
         const SOLSCAN_PROXY_URL = 'https://solscan-proxy.mdmoto.workers.dev';
         const DEXSCREENER_API = 'https://api.dexscreener.com/latest/dex/tokens';
-        const JUPITER_PROXY_URL = 'https://solscan-proxy.mdmoto.workers.dev';
+        const JUPITER_QUOTE_API = 'https://quote-api.jup.ag/v6/quote';
         const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'; // Solana USDC
         const TEN_WAN_USD = 100000;
         const DISPLAY_CURRENCY_SYMBOL = '$';
@@ -405,7 +405,6 @@
         }
 
         const buildSolscanProxyUrl = (path, params) => buildProxyUrl('solscan', path, params);
-        const buildJupiterProxyUrl = (path, params) => buildProxyUrl('jupiter', path, params);
 
         // 构建 Solscan 代理 URL
         async function fetchJson(url, options = {}) {
@@ -463,13 +462,14 @@
 
         async function fetchJupiterPrice() {
             try {
-                const url = buildJupiterProxyUrl('/v6/quote', {
+                const params = new URLSearchParams({
                     inputMint: USDC_MINT,
                     outputMint: MEOW_TOKEN_ADDRESS,
-                    amount: '1000000', // 1 USDC (6 decimals)
+                    amount: '1000000',
                     slippageBps: '50',
                     onlyDirectRoutes: 'true'
                 });
+                const url = `${JUPITER_QUOTE_API}?${params.toString()}`;
                 const quote = await fetchJson(url);
                 const route = quote?.data?.[0];
                 if (!route) return null;
