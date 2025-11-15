@@ -757,8 +757,26 @@
         }
 
         // 加载所有数据
+        function applyManualFallbacks() {
+            if (MANUAL_FALLBACKS.totalSupply !== undefined) {
+                document.getElementById('totalSupply').textContent =
+                    formatTokenAmount(MANUAL_FALLBACKS.totalSupply, 2) + ' MEOW';
+            }
+            if (MANUAL_FALLBACKS.tokenPrice !== undefined) {
+                document.getElementById('tokenPrice').textContent = formatUSD(MANUAL_FALLBACKS.tokenPrice, 6);
+            }
+            if (MANUAL_FALLBACKS.volume24hText) {
+                document.getElementById('volume24h').textContent = MANUAL_FALLBACKS.volume24hText;
+            }
+            if (MANUAL_FALLBACKS.totalSales !== undefined) {
+                document.getElementById('totalSalesValue').textContent = formatLargeCurrency(MANUAL_FALLBACKS.totalSales);
+                document.getElementById('fundPoolValue').textContent = formatLargeCurrency(MANUAL_FALLBACKS.totalSales * 0.1);
+            }
+        }
+
         async function loadAllData() {
             renderTierSnapshot();
+            applyManualFallbacks();
             await Promise.all([
                 loadShopStatistics(),
                 loadTokenMarketData(),
