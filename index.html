@@ -185,7 +185,7 @@
         <!-- 喵币信息 -->
         <section class="mb-6 sm:mb-8 animate-slide-up" style="animation-delay: 0.2s; opacity: 0;">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2 px-1">
-                <span class="text-2xl">🪙</span> 
+                <img src="https://pub-52cfa058efcc498eb28c64d7af72cf06.r2.dev/logo.png" alt="MEOW logo" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-amber-300 shadow" />
                 <span>喵币 (MEOW)</span>
             </h2>
             
@@ -523,7 +523,7 @@
                     document.getElementById('totalSupply').textContent =
                         formatTokenAmount(MANUAL_FALLBACKS.totalSupply, 2) + ' MEOW';
                 }
-                showOnChainUnavailable('链上数据获取失败');
+                showOnChainUnavailable('链上数据获取失败', { skipSupply: MANUAL_FALLBACKS.totalSupply !== undefined });
             }
         }
 
@@ -750,8 +750,11 @@
             `;
         }
 
-        function showOnChainUnavailable(message = '链上数据暂不可用') {
-            document.getElementById('totalSupply').textContent = message;
+        function showOnChainUnavailable(message = '链上数据暂不可用', options = {}) {
+            const { skipSupply = false } = options;
+            if (!skipSupply) {
+                document.getElementById('totalSupply').textContent = message;
+            }
             showHoldersPlaceholder(message);
             showTransactionsPlaceholder(message);
         }
