@@ -315,7 +315,7 @@
                 <p class="flex items-center justify-center gap-2">
                     <span>© 2024 喵乐商城</span>
                     <span>·</span>
-                    <a href="https://shop.maollar.com" target="_blank" class="text-amber-600 hover:text-amber-700 transition">
+                    <a id="shopLink" href="https://shop.maollar.com" target="_blank" rel="noopener noreferrer" class="text-amber-600 hover:text-amber-700 transition">
                         访问商城
                     </a>
                 </p>
@@ -338,6 +338,18 @@
             tokenPrice: 0.094525,
             volume24hText: '暂无数据'
         };
+        // 设备识别与商城链接
+        function isMobileDevice() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(ua);
+        }
+        function getShopUrl() {
+            return isMobileDevice() ? 'https://m.maollar.com' : 'https://shop.maollar.com';
+        }
+        function setShopLink() {
+            const link = document.getElementById('shopLink');
+            if (link) link.href = getShopUrl();
+        }
         const TEN_WAN_USD = 100000;
         const DISPLAY_CURRENCY_SYMBOL = '$';
         const tierSnapshot = {
@@ -780,6 +792,7 @@
         async function loadAllData() {
             renderTierSnapshot();
             applyManualFallbacks();
+            setShopLink();
             await Promise.all([
                 loadShopStatistics(),
                 loadTokenMarketData(),
