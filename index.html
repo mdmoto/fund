@@ -100,11 +100,11 @@
                 <img src="https://pub-52cfa058efcc498eb28c64d7af72cf06.r2.dev/logo.png" 
                      alt="Maollar logo" 
                      class="h-12 w-12 sm:h-16 sm:w-16 rounded-full border-2 border-amber-400 shadow-lg">
-                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">喵乐商城实时数据</h1>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900" data-i18n="title">喵乐商城实时数据</h1>
             </div>
             <div class="flex items-center justify-center gap-2 text-sm sm:text-base text-gray-600">
                 <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span>实时更新 · 数据透明</span>
+                <span data-i18n="subtitle">实时更新 · 数据透明</span>
             </div>
         </header>
 
@@ -112,7 +112,7 @@
         <section class="mb-6 sm:mb-8 animate-slide-up" style="animation-delay: 0.1s; opacity: 0;">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2 px-1">
                 <span class="text-2xl">📊</span> 
-                <span>商城统计</span>
+                <span data-i18n="section.stats">商城统计</span>
             </h2>
             
             <!-- 档位信息 - 移动端2列，大屏4列 -->
@@ -120,7 +120,7 @@
                 <div class="stat-card rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="text-xl">🎯</span>
-                        <div class="text-xs sm:text-sm text-gray-600">当前档位</div>
+                        <div class="text-xs sm:text-sm text-gray-600" data-i18n="label.currentTier">当前档位</div>
                     </div>
                     <div class="text-2xl sm:text-3xl font-bold text-amber-600 number-value" id="currentTier">
                         <span class="animate-pulse-slow">...</span>
@@ -129,7 +129,7 @@
                 <div class="stat-card rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="text-xl">💰</span>
-                        <div class="text-xs sm:text-sm text-gray-600">每$1获得</div>
+                        <div class="text-xs sm:text-sm text-gray-600" data-i18n="label.coinsPerUsd">每$1获得</div>
                     </div>
                     <div class="text-2xl sm:text-3xl font-bold text-blue-600 number-value" id="coinsPerUsd">
                         <span class="animate-pulse-slow">...</span>
@@ -138,7 +138,7 @@
                 <div class="stat-card rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="text-xl">💎</span>
-                        <div class="text-xs sm:text-sm text-gray-600">喵币价格</div>
+                        <div class="text-xs sm:text-sm text-gray-600" data-i18n="label.intrinsicPrice">喵币价格</div>
                     </div>
                     <div class="text-2xl sm:text-3xl font-bold text-green-600 number-value" id="intrinsicPrice">
                         <span class="animate-pulse-slow">...</span>
@@ -147,7 +147,7 @@
                 <div class="stat-card rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="text-xl">📈</span>
-                        <div class="text-xs sm:text-sm text-gray-600">市场溢价</div>
+                        <div class="text-xs sm:text-sm text-gray-600" data-i18n="label.premium">市场溢价</div>
                     </div>
                     <div class="text-2xl sm:text-3xl font-bold text-purple-600 number-value" id="secondaryPremium">
                         <span class="animate-pulse-slow">...</span>
@@ -161,7 +161,7 @@
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-2">
                             <span class="text-2xl">🏪</span>
-                            <div class="text-sm sm:text-base text-gray-600 font-semibold">总销售额</div>
+                            <div class="text-sm sm:text-base text-gray-600 font-semibold" data-i18n="label.totalSales">总销售额</div>
                         </div>
                     </div>
                     <div class="text-2xl sm:text-3xl font-bold text-orange-600 number-value" id="totalSalesValue">
@@ -172,7 +172,7 @@
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-2">
                             <span class="text-2xl">🏦</span>
-                            <div class="text-sm sm:text-base text-gray-600 font-semibold">基金池总金额</div>
+                            <div class="text-sm sm:text-base text-gray-600 font-semibold" data-i18n="label.fundPool">基金池总金额</div>
                         </div>
                     </div>
                     <div class="text-2xl sm:text-3xl font-bold text-red-600 number-value" id="fundPoolValue">
@@ -186,14 +186,14 @@
         <section class="mb-6 sm:mb-8 animate-slide-up" style="animation-delay: 0.2s; opacity: 0;">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2 px-1">
                 <img src="https://pub-52cfa058efcc498eb28c64d7af72cf06.r2.dev/logo.png" alt="MEOW logo" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-amber-300 shadow" />
-                <span>喵币 (MEOW)</span>
+                <span data-i18n="section.meow">喵币 (MEOW)</span>
             </h2>
             
             <!-- 代币信息卡片 -->
             <div class="stat-card rounded-xl p-4 sm:p-6 shadow-lg mb-3 sm:mb-4">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pb-4 border-b border-gray-200">
                     <div class="flex-1 min-w-0">
-                        <div class="text-xs sm:text-sm text-gray-600 mb-1">代币地址</div>
+                        <div class="text-xs sm:text-sm text-gray-600 mb-1" data-i18n="label.tokenAddress">代币地址</div>
                         <div class="text-xs sm:text-sm font-mono text-gray-800 break-all" id="tokenAddress">
                             9zFnwrEyyNPVgahM5NL4MpUH7iy7L8qNCqRprzj39m9N
                         </div>
@@ -202,7 +202,7 @@
                        target="_blank" 
                        rel="noopener noreferrer"
                        class="flex items-center justify-center gap-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:from-blue-600 hover:to-blue-700 transition shadow-md whitespace-nowrap">
-                        <span>查看详情</span>
+                        <span data-i18n="action.view">查看详情</span>
                         <span>↗</span>
                     </a>
                 </div>
@@ -212,7 +212,7 @@
                     <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-lg">📦</span>
-                            <div class="text-xs sm:text-sm text-gray-600">总供应量</div>
+                            <div class="text-xs sm:text-sm text-gray-600" data-i18n="label.totalSupply">总供应量</div>
                         </div>
                         <div class="text-lg sm:text-xl font-bold text-gray-900 number-value" id="totalSupply">
                             <span class="animate-pulse-slow">加载中...</span>
@@ -221,7 +221,7 @@
                     <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg p-4">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-lg">💵</span>
-                            <div class="text-xs sm:text-sm text-gray-600">二级市场价格</div>
+                            <div class="text-xs sm:text-sm text-gray-600" data-i18n="label.marketPrice">二级市场价格</div>
                         </div>
                         <div class="text-lg sm:text-xl font-bold text-green-700 number-value" id="tokenPrice">
                             <span class="animate-pulse-slow">查询中...</span>
@@ -230,7 +230,7 @@
                     <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-4">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-lg">📊</span>
-                            <div class="text-xs sm:text-sm text-gray-600">24h交易量</div>
+                            <div class="text-xs sm:text-sm text-gray-600" data-i18n="label.volume24h">24h交易量</div>
                         </div>
                         <div class="text-lg sm:text-xl font-bold text-blue-700 number-value" id="volume24h">
                             <span class="animate-pulse-slow">查询中...</span>
@@ -244,17 +244,17 @@
         <section class="mb-6 sm:mb-8 animate-slide-up" style="animation-delay: 0.3s; opacity: 0;">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2 px-1">
                 <span class="text-2xl">🏆</span> 
-                <span>持仓排行榜</span>
+                <span data-i18n="section.holders">持仓排行榜</span>
             </h2>
             <div class="stat-card rounded-xl shadow-lg overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm sm:text-base">
                         <thead class="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
                             <tr>
-                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm">排名</th>
-                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm">地址</th>
-                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm">持仓量</th>
-                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm">占比</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm" data-i18n="table.rank">排名</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm" data-i18n="table.address">地址</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm" data-i18n="table.amount">持仓量</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm" data-i18n="table.share">占比</th>
                             </tr>
                         </thead>
                         <tbody id="holdersTable" class="divide-y divide-gray-200 bg-white">
@@ -273,18 +273,18 @@
         <section class="mb-20 sm:mb-8 animate-slide-up" style="animation-delay: 0.4s; opacity: 0;">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2 px-1">
                 <span class="text-2xl">📈</span> 
-                <span>最近交易</span>
+                <span data-i18n="section.trades">最近交易</span>
             </h2>
             <div class="stat-card rounded-xl shadow-lg overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm sm:text-base">
                         <thead class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
                             <tr>
-                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm">时间</th>
-                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm">类型</th>
-                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm">数量</th>
-                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm">价格</th>
-                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm hidden sm:table-cell">交易哈希</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm" data-i18n="table.time">时间</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm" data-i18n="table.type">类型</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm" data-i18n="table.qty">数量</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm" data-i18n="table.price">价格</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm hidden sm:table-cell" data-i18n="table.txhash">交易哈希</th>
                             </tr>
                         </thead>
                         <tbody id="transactionsTable" class="divide-y divide-gray-200 bg-white">
@@ -304,7 +304,7 @@
             <button onclick="loadAllData()" 
                     class="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-full shadow-2xl transition transform hover:scale-105 active:scale-95">
                 <span class="text-lg sm:text-xl">🔄</span>
-                <span class="text-sm sm:text-base">刷新</span>
+                <span class="text-sm sm:text-base" data-i18n="action.refresh">刷新</span>
             </button>
         </div>
         
@@ -315,10 +315,24 @@
                 <p class="flex items-center justify-center gap-2">
                     <span>© 2024 喵乐商城</span>
                     <span>·</span>
-                    <a id="shopLink" href="https://shop.maollar.com" target="_blank" rel="noopener noreferrer" class="text-amber-600 hover:text-amber-700 transition">
+                    <a id="shopLink" href="https://shop.maollar.com" target="_blank" rel="noopener noreferrer" class="text-amber-600 hover:text-amber-700 transition" data-i18n="action.visitShop">
                         访问商城
                     </a>
                 </p>
+                <div class="flex items-center justify-center gap-2">
+                    <label for="langSelect" class="text-gray-500" data-i18n="label.language">语言</label>
+                    <select id="langSelect" class="border rounded px-2 py-1 text-gray-700">
+                        <option value="zh-CN">简体中文</option>
+                        <option value="en">English</option>
+                        <option value="fr">Français</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="es">Español</option>
+                        <option value="ar">العربية</option>
+                        <option value="th">ไทย</option>
+                        <option value="vi">Tiếng Việt</option>
+                    </select>
+                </div>
             </div>
         </footer>
     </div>
@@ -350,6 +364,38 @@
             const link = document.getElementById('shopLink');
             if (link) link.href = getShopUrl();
         }
+        // i18n translations (9 languages)
+        const translations = {
+            'zh-CN': { title:'喵乐商城实时数据', subtitle:'实时更新 · 数据透明', 'section.stats':'商城统计', 'label.currentTier':'当前档位', 'label.coinsPerUsd':'每$1获得', 'label.intrinsicPrice':'喵币价格', 'label.premium':'市场溢价', 'label.totalSales':'总销售额', 'label.fundPool':'基金池总金额', 'section.meow':'喵币 (MEOW)', 'label.tokenAddress':'代币地址', 'label.totalSupply':'总供应量', 'label.marketPrice':'二级市场价格', 'label.volume24h':'24h交易量', 'section.holders':'持仓排行榜', 'table.rank':'排名', 'table.address':'地址', 'table.amount':'持仓量', 'table.share':'占比', 'section.trades':'最近交易', 'table.time':'时间', 'table.type':'类型', 'table.qty':'数量', 'table.price':'价格', 'table.txhash':'交易哈希', 'action.refresh':'刷新', 'action.visitShop':'访问商城', 'label.language':'语言' },
+            en: { title:'Maollar · Realtime Dashboard', subtitle:'Live updates · Transparent data', 'section.stats':'Store Stats', 'label.currentTier':'Current Tier', 'label.coinsPerUsd':'MEOW per $1', 'label.intrinsicPrice':'MEOW Intrinsic Price', 'label.premium':'Market Premium', 'label.totalSales':'Total Sales', 'label.fundPool':'Fund Pool (10%)', 'section.meow':'MEOW Token', 'label.tokenAddress':'Token Address', 'label.totalSupply':'Total Supply', 'label.marketPrice':'Secondary Market Price', 'label.volume24h':'24h Volume', 'section.holders':'Top Holders', 'table.rank':'Rank', 'table.address':'Address', 'table.amount':'Amount', 'table.share':'Share', 'section.trades':'Recent Trades', 'table.time':'Time', 'table.type':'Type', 'table.qty':'Qty', 'table.price':'Price', 'table.txhash':'Tx Hash', 'action.refresh':'Refresh', 'action.visitShop':'Visit Store', 'label.language':'Language' },
+            fr: { title:'Maollar · Données en temps réel', subtitle:'Mise à jour en direct · Données transparentes', 'section.stats':'Statistiques Boutique', 'label.currentTier':'Palier actuel', 'label.coinsPerUsd':'MEOW par $1', 'label.intrinsicPrice':'Prix intrinsèque', 'label.premium':'Prime du marché', 'label.totalSales':'Ventes totales', 'label.fundPool':'Fonds (10%)', 'section.meow':'Jeton MEOW', 'label.tokenAddress':'Adresse du jeton', 'label.totalSupply':'Offre totale', 'label.marketPrice':'Prix du marché secondaire', 'label.volume24h':'Volume 24h', 'section.holders':'Principaux détenteurs', 'table.rank':'Rang', 'table.address':'Adresse', 'table.amount':'Quantité', 'table.share':'Part', 'section.trades':'Transactions récentes', 'table.time':'Heure', 'table.type':'Type', 'table.qty':'Qté', 'table.price':'Prix', 'table.txhash':'Hash', 'action.refresh':'Rafraîchir', 'action.visitShop':'Visiter la boutique', 'label.language':'Langue' },
+            ja: { title:'Maollar · リアルタイムデータ', subtitle:'リアルタイム更新 · データの透明性', 'section.stats':'ストア統計', 'label.currentTier':'現在のティア', 'label.coinsPerUsd':'$1あたりのMEOW', 'label.intrinsicPrice':'MEOW 内在価値', 'label.premium':'市場プレミアム', 'label.totalSales':'総売上', 'label.fundPool':'基金プール (10%)', 'section.meow':'MEOW トークン', 'label.tokenAddress':'トークンアドレス', 'label.totalSupply':'総供給量', 'label.marketPrice':'セカンダリ価格', 'label.volume24h':'24時間出来高', 'section.holders':'上位保有者', 'table.rank':'順位', 'table.address':'アドレス', 'table.amount':'保有量', 'table.share':'比率', 'section.trades':'最近の取引', 'table.time':'時間', 'table.type':'タイプ', 'table.qty':'数量', 'table.price':'価格', 'table.txhash':'Tx ハッシュ', 'action.refresh':'更新', 'action.visitShop':'ストアへ', 'label.language':'言語' },
+            ko: { title:'Maollar · 실시간 대시보드', subtitle:'실시간 업데이트 · 투명한 데이터', 'section.stats':'스토어 통계', 'label.currentTier':'현재 티어', 'label.coinsPerUsd':'$1 당 MEOW', 'label.intrinsicPrice':'MEOW 내재가치', 'label.premium':'시장 프리미엄', 'label.totalSales':'총 매출', 'label.fundPool':'기금 풀 (10%)', 'section.meow':'MEOW 토큰', 'label.tokenAddress':'토큰 주소', 'label.totalSupply':'총 공급량', 'label.marketPrice':'2차 시장 가격', 'label.volume24h':'24시간 거래량', 'section.holders':'보유 상위', 'table.rank':'순위', 'table.address':'주소', 'table.amount':'수량', 'table.share':'비율', 'section.trades':'최근 거래', 'table.time':'시간', 'table.type':'유형', 'table.qty':'수량', 'table.price':'가격', 'table.txhash':'Tx 해시', 'action.refresh':'새로고침', 'action.visitShop':'스토어 방문', 'label.language':'언어' },
+            es: { title:'Maollar · Datos en tiempo real', subtitle:'Actualización en vivo · Datos transparentes', 'section.stats':'Estadísticas de la tienda', 'label.currentTier':'Nivel actual', 'label.coinsPerUsd':'MEOW por $1', 'label.intrinsicPrice':'Precio intrínseco', 'label.premium':'Prima de mercado', 'label.totalSales':'Ventas totales', 'label.fundPool':'Fondo (10%)', 'section.meow':'Token MEOW', 'label.tokenAddress':'Dirección del token', 'label.totalSupply':'Suministro total', 'label.marketPrice':'Precio secundario', 'label.volume24h':'Volumen 24h', 'section.holders':'Principales holders', 'table.rank':'Rango', 'table.address':'Dirección', 'table.amount':'Cantidad', 'table.share':'Porcentaje', 'section.trades':'Operaciones recientes', 'table.time':'Hora', 'table.type':'Tipo', 'table.qty':'Cant.', 'table.price':'Precio', 'table.txhash':'Hash', 'action.refresh':'Actualizar', 'action.visitShop':'Visitar tienda', 'label.language':'Idioma' },
+            ar: { title:'ماولار · لوحة بيانات فورية', subtitle:'تحديثات فورية · بيانات شفافة', 'section.stats':'إحصائيات المتجر', 'label.currentTier':'المستوى الحالي', 'label.coinsPerUsd':'MEOW لكل 1$', 'label.intrinsicPrice':'القيمة الجوهرية', 'label.premium':'علاوة السوق', 'label.totalSales':'إجمالي المبيعات', 'label.fundPool':'صندوق (10%)', 'section.meow':'رمز MEOW', 'label.tokenAddress':'عنوان الرمز', 'label.totalSupply':'الإمداد الكلي', 'label.marketPrice':'سعر السوق الثانوي', 'label.volume24h':'حجم 24 ساعة', 'section.holders':'أكبر الحائزين', 'table.rank':'الترتيب', 'table.address':'العنوان', 'table.amount':'الكمية', 'table.share':'النسبة', 'section.trades':'أحدث التداولات', 'table.time':'الوقت', 'table.type':'النوع', 'table.qty':'الكمية', 'table.price':'السعر', 'table.txhash':'تجزئة المعاملة', 'action.refresh':'تحديث', 'action.visitShop':'زيارة المتجر', 'label.language':'اللغة' },
+            th: { title:'Maollar · ข้อมูลเรียลไทม์', subtitle:'อัปเดตสด · ข้อมูลโปร่งใส', 'section.stats':'สถิติร้านค้า', 'label.currentTier':'ระดับปัจจุบัน', 'label.coinsPerUsd':'MEOW ต่อ $1', 'label.intrinsicPrice':'ราคามูลค่าที่แท้จริง', 'label.premium':'พรีเมียมตลาด', 'label.totalSales':'ยอดขายรวม', 'label.fundPool':'กองทุน (10%)', 'section.meow':'โทเคน MEOW', 'label.tokenAddress':'ที่อยู่โทเคน', 'label.totalSupply':'อุปทานรวม', 'label.marketPrice':'ราคารอง', 'label.volume24h':'ปริมาณ 24ชม.', 'section.holders':'ผู้ถืออันดับต้น', 'table.rank':'อันดับ', 'table.address':'ที่อยู่', 'table.amount':'จำนวน', 'table.share':'สัดส่วน', 'section.trades':'รายการล่าสุด', 'table.time':'เวลา', 'table.type':'ประเภท', 'table.qty':'จำนวน', 'table.price':'ราคา', 'table.txhash':'แฮช', 'action.refresh':'รีเฟรช', 'action.visitShop':'เข้าสู่ร้าน', 'label.language':'ภาษา' },
+            vi: { title:'Maollar · Dữ liệu thời gian thực', subtitle:'Cập nhật trực tiếp · Dữ liệu minh bạch', 'section.stats':'Thống kê cửa hàng', 'label.currentTier':'Bậc hiện tại', 'label.coinsPerUsd':'MEOW trên $1', 'label.intrinsicPrice':'Giá nội tại', 'label.premium':'Phụ trội thị trường', 'label.totalSales':'Tổng doanh số', 'label.fundPool':'Quỹ (10%)', 'section.meow':'Token MEOW', 'label.tokenAddress':'Địa chỉ token', 'label.totalSupply':'Tổng cung', 'label.marketPrice':'Giá thị trường thứ cấp', 'label.volume24h':'Khối lượng 24h', 'section.holders':'Top nắm giữ', 'table.rank':'Hạng', 'table.address':'Địa chỉ', 'table.amount':'Số lượng', 'table.share':'Tỷ lệ', 'section.trades':'Giao dịch gần đây', 'table.time':'Thời gian', 'table.type':'Loại', 'table.qty':'SL', 'table.price':'Giá', 'table.txhash':'Tx Hash', 'action.refresh':'Làm mới', 'action.visitShop':'Vào cửa hàng', 'label.language':'Ngôn ngữ' },
+        };
+
+        function detectLanguage() {
+            const saved = localStorage.getItem('fund.lang');
+            if (saved && translations[saved]) return saved;
+            const sys = (navigator.language || 'zh-CN').toLowerCase();
+            const map = { 'zh':'zh-CN','zh-cn':'zh-CN','en':'en','fr':'fr','ja':'ja','ko':'ko','es':'es','ar':'ar','th':'th','vi':'vi' };
+            return map[sys] || map[sys.split('-')[0]] || 'zh-CN';
+        }
+
+        function applyI18n(lang) {
+            const dict = translations[lang] || translations['zh-CN'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.textContent = dict[key];
+            });
+            const select = document.getElementById('langSelect');
+            if (select) select.value = lang;
+            localStorage.setItem('fund.lang', lang);
+        }
+
         const TEN_WAN_USD = 100000;
         const DISPLAY_CURRENCY_SYMBOL = '$';
         const tierSnapshot = {
@@ -793,6 +839,15 @@
             renderTierSnapshot();
             applyManualFallbacks();
             setShopLink();
+            // i18n init
+            const lang = detectLanguage();
+            applyI18n(lang);
+            const sel = document.getElementById('langSelect');
+            if (sel) {
+                sel.addEventListener('change', (e) => {
+                    applyI18n(e.target.value);
+                });
+            }
             await Promise.all([
                 loadShopStatistics(),
                 loadTokenMarketData(),
