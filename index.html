@@ -349,7 +349,7 @@
         const MANUAL_FALLBACKS = {
             totalSales: 1536236.43,
             totalSupply: 729529553.75,
-            tokenPrice: 0.094525,
+            tokenPrice: 0.0094525,
             volume24hText: '暂无数据'
         };
         // 设备识别与商城链接
@@ -408,6 +408,9 @@
             intrinsicPrice: 0.0002625
         };
         let latestSecondaryPriceUsd = null;
+        // 存储用于计算内在价格的数据
+        let currentFundPoolUsd = null;
+        let currentTotalSupply = null;
 
         // 格式化数字
         function formatNumber(num) {
@@ -498,6 +501,34 @@
             }
         }
 
+        // 计算并更新喵币价格（基金池总金额 / 总供应量）
+        function updateIntrinsicPrice() {
+            const intrinsicPriceNode = document.getElementById('intrinsicPrice');
+            if (!intrinsicPriceNode) return;
+
+            // 使用全局变量中的数据
+            const fundPoolUsd = currentFundPoolUsd;
+            const totalSupply = currentTotalSupply;
+
+            // 如果全局变量为空，尝试使用手动回退值
+            const finalFundPool = fundPoolUsd !== null ? fundPoolUsd : (MANUAL_FALLBACKS.totalSales * 0.1);
+            const finalTotalSupply = totalSupply !== null ? totalSupply : MANUAL_FALLBACKS.totalSupply;
+
+            // 计算内在价格
+            if (finalFundPool && finalTotalSupply && finalTotalSupply > 0) {
+                const intrinsicPrice = finalFundPool / finalTotalSupply;
+                intrinsicPriceNode.textContent = formatUSD(intrinsicPrice, 6);
+                // 更新 tierSnapshot.intrinsicPrice 以便溢价计算使用
+                tierSnapshot.intrinsicPrice = intrinsicPrice;
+                // 如果已有二级市场价格，更新溢价显示
+                if (latestSecondaryPriceUsd) {
+                    updateSecondaryPremiumDisplay();
+                }
+            } else {
+                intrinsicPriceNode.textContent = '计算中...';
+            }
+        }
+
         function renderTierSnapshot() {
             const tierLabel = `第${tierSnapshot.level}档`;
             const totalSalesUsd = tierSnapshot.salesUnit * TEN_WAN_USD;
@@ -509,14 +540,15 @@
 
             document.getElementById('currentTier').textContent = tierLabel;
             document.getElementById('coinsPerUsd').textContent = `${coinsPerUsd} 枚`;
-            document.getElementById('intrinsicPrice').textContent = formatUSD(tierSnapshot.intrinsicPrice, 6);
+            // 不再直接设置内在价格，而是通过计算函数更新
+            document.getElementById('intrinsicPrice').textContent = '计算中...';
             document.getElementById('secondaryPremium').textContent = '计算中...';
         }
 
         function updateSecondaryPremiumDisplay() {
             const premiumNode = document.getElementById('secondaryPremium');
             if (!premiumNode) return;
-            if (!latestSecondaryPriceUsd || !tierSnapshot.intrinsicPrice) {
+            if (!latestSecondaryPriceUsd || !tierSnapshot.intrinsicPrice || tierSnapshot.intrinsicPrice <= 0) {
                 premiumNode.textContent = '暂无数据';
                 return;
             }
@@ -566,6 +598,8 @@
                     const supplyRaw = metaInfo.supply ?? metaInfo.tokenAuthorityData?.supply ?? 0;
                     const decimals = metaInfo.decimals ?? 9;
                     const totalSupply = supplyRaw / Math.pow(10, decimals);
+                    // 存储到全局变量
+                    currentTotalSupply = totalSupply;
                     document.getElementById('totalSupply').textContent = formatTokenAmount(totalSupply, 2) + ' MEOW';
                 } else {
                     document.getElementById('totalSupply').textContent = '暂无供应数据';
@@ -578,11 +612,17 @@
             } catch (error) {
                 console.error('加载链上代币信息失败:', error);
                 if (MANUAL_FALLBACKS.totalSupply !== undefined) {
+                    // 存储到全局变量
+                    currentTotalSupply = MANUAL_FALLBACKS.totalSupply;
                     document.getElementById('totalSupply').textContent =
                         formatTokenAmount(MANUAL_FALLBACKS.totalSupply, 2) + ' MEOW';
+                } else {
+                    currentTotalSupply = null;
                 }
                 showOnChainUnavailable('链上数据获取失败', { skipSupply: MANUAL_FALLBACKS.totalSupply !== undefined });
             }
+            // 数据加载完成后更新内在价格
+            updateIntrinsicPrice();
         }
 
         async function loadTokenHolders() {
@@ -769,21 +809,29 @@
                 if (result.result && result.data) {
                     const totalSales = Number(result.data.totalSalesAmount || 0);
                     const fundPool = totalSales * 0.1;
-            document.getElementById('totalSalesValue').textContent = formatLargeCurrency(totalSales);
-            document.getElementById('fundPoolValue').textContent = formatLargeCurrency(fundPool);
+                    // 存储到全局变量
+                    currentFundPoolUsd = fundPool;
+                    document.getElementById('totalSalesValue').textContent = formatLargeCurrency(totalSales);
+                    document.getElementById('fundPoolValue').textContent = formatLargeCurrency(fundPool);
                 } else {
                     throw new Error('invalid payload');
                 }
             } catch (error) {
                 console.error('加载实时销售数据失败:', error);
-        if (MANUAL_FALLBACKS.totalSales !== undefined) {
-            document.getElementById('totalSalesValue').textContent = formatLargeCurrency(MANUAL_FALLBACKS.totalSales);
-            document.getElementById('fundPoolValue').textContent = formatLargeCurrency(MANUAL_FALLBACKS.totalSales * 0.1);
-        } else {
-            document.getElementById('totalSalesValue').textContent = '加载失败';
-            document.getElementById('fundPoolValue').textContent = '加载失败';
-        }
+                if (MANUAL_FALLBACKS.totalSales !== undefined) {
+                    const fundPool = MANUAL_FALLBACKS.totalSales * 0.1;
+                    // 存储到全局变量
+                    currentFundPoolUsd = fundPool;
+                    document.getElementById('totalSalesValue').textContent = formatLargeCurrency(MANUAL_FALLBACKS.totalSales);
+                    document.getElementById('fundPoolValue').textContent = formatLargeCurrency(fundPool);
+                } else {
+                    currentFundPoolUsd = null;
+                    document.getElementById('totalSalesValue').textContent = '加载失败';
+                    document.getElementById('fundPoolValue').textContent = '加载失败';
+                }
             }
+            // 数据加载完成后更新内在价格
+            updateIntrinsicPrice();
         }
 
         function showHoldersPlaceholder(message) {
@@ -820,6 +868,8 @@
         // 加载所有数据
         function applyManualFallbacks() {
             if (MANUAL_FALLBACKS.totalSupply !== undefined) {
+                // 初始化全局变量
+                currentTotalSupply = MANUAL_FALLBACKS.totalSupply;
                 document.getElementById('totalSupply').textContent =
                     formatTokenAmount(MANUAL_FALLBACKS.totalSupply, 2) + ' MEOW';
             }
@@ -830,9 +880,13 @@
                 document.getElementById('volume24h').textContent = MANUAL_FALLBACKS.volume24hText;
             }
             if (MANUAL_FALLBACKS.totalSales !== undefined) {
+                // 初始化全局变量
+                currentFundPoolUsd = MANUAL_FALLBACKS.totalSales * 0.1;
                 document.getElementById('totalSalesValue').textContent = formatLargeCurrency(MANUAL_FALLBACKS.totalSales);
                 document.getElementById('fundPoolValue').textContent = formatLargeCurrency(MANUAL_FALLBACKS.totalSales * 0.1);
             }
+            // 应用手动回退值后，尝试计算内在价格
+            updateIntrinsicPrice();
         }
 
         async function loadAllData() {
