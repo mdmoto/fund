@@ -141,11 +141,16 @@
             <span class="font-mono">${{ formatPrice(pointBalance * stats.fundPrice) }}</span>
           </div>
           <div class="mt-4">
-            <button class="btn btn-primary btn-full" @click="$router.push('/exchange')"
-              :disabled="!walletAddress || pointBalance <= 0">
-              {{ t('dashboard.exchangeBtn2') }}
+            <template v-if="isLoggedIn">
+              <button class="btn btn-primary btn-full" @click="$router.push('/exchange')"
+                :disabled="!walletAddress || pointBalance <= 0">
+                {{ t('dashboard.exchangeBtn2') }}
+              </button>
+              <div v-if="!walletAddress" class="no-wallet-hint">{{ t('exchange.noWalletAlert') }}</div>
+            </template>
+            <button v-else class="btn btn-outline btn-full" @click="$router.push('/login')">
+              {{ t('common.loginToView') || 'Login to View' }}
             </button>
-            <div v-if="!walletAddress" class="no-wallet-hint">{{ t('exchange.noWalletAlert') }}</div>
           </div>
         </div>
 
@@ -154,34 +159,42 @@
             <span class="card-title">{{ t('dashboard.onChainBalance') }}</span>
             <span class="badge badge-green">{{ t('dashboard.live') }}</span>
           </div>
-          <div class="asset-amount">
-            <span v-if="loadingOnchain" class="skeleton" style="width:120px;height:36px;display:inline-block"></span>
-            <span v-else>{{ formatTokens(maoBalance) }}</span>
-          </div>
-          <div class="asset-amount-sub">MEOW · Solana</div>
-          <div class="asset-usd">
-            <span>{{ t('dashboard.fundValue') }}</span>
-            <span class="font-mono">${{ formatPrice(maoBalance * stats.fundPrice) }}</span>
-          </div>
-          <div class="asset-usd" style="border-top:none;padding-top:0">
-            <span class="text-muted">{{ t('dashboard.marketValue') }}</span>
-            <span class="font-mono text-green">${{ formatPrice(maoBalance * stats.marketPrice) }}</span>
-          </div>
-          <div class="mt-4">
-            <a v-if="walletAddress"
-              :href="`https://solscan.io/account/${walletAddress}?cluster=devnet`"
-              target="_blank" class="btn btn-outline btn-full">
-              {{ t('dashboard.viewSolscan') }}
-            </a>
-            <button v-else class="btn btn-teal btn-full" @click="$router.push('/wallet')">
-              {{ t('dashboard.setupWallet') }}
+          <template v-if="isLoggedIn">
+            <div class="asset-amount">
+              <span v-if="loadingOnchain" class="skeleton" style="width:120px;height:36px;display:inline-block"></span>
+              <span v-else>{{ formatTokens(maoBalance) }}</span>
+            </div>
+            <div class="asset-amount-sub">MEOW · Solana</div>
+            <div class="asset-usd">
+              <span>{{ t('dashboard.fundValue') }}</span>
+              <span class="font-mono">${{ formatPrice(maoBalance * stats.fundPrice) }}</span>
+            </div>
+            <div class="asset-usd" style="border-top:none;padding-top:0">
+              <span class="text-muted">{{ t('dashboard.marketValue') }}</span>
+              <span class="font-mono text-green">${{ formatPrice(maoBalance * stats.marketPrice) }}</span>
+            </div>
+            <div class="mt-4">
+              <a v-if="walletAddress"
+                :href="`https://solscan.io/account/${walletAddress}?cluster=devnet`"
+                target="_blank" class="btn btn-outline btn-full">
+                {{ t('dashboard.viewSolscan') }}
+              </a>
+              <button v-else class="btn btn-teal btn-full" @click="$router.push('/wallet')">
+                {{ t('dashboard.setupWallet') }}
+              </button>
+            </div>
+          </template>
+          <div v-else class="mt-4">
+            <div class="empty-state" style="padding: 20px 0;">{{ t('common.privateInfo') || 'Login to see on-chain assets' }}</div>
+            <button class="btn btn-outline btn-full" @click="$router.push('/login')">
+              {{ t('common.login') || 'Login' }}
             </button>
           </div>
         </div>
       </div>
 
       <!-- Recent History -->
-      <div class="card">
+      <div class="card" v-if="isLoggedIn">
         <div class="card-header">
           <span class="card-title">{{ t('dashboard.recentExchanges') }}</span>
           <button class="btn btn-outline" style="font-size:11px;padding:5px 10px" @click="$router.push('/exchange')">
@@ -240,6 +253,7 @@ const pointBalance = ref(0)
 const maoBalance = ref(0)
 const history = ref([])
 const walletAddress = ref(localStorage.getItem('mao_wallet') || '')
+const isLoggedIn = computed(() => !!localStorage.getItem('mao_token'))
 
 const milestoneInfo = computed(() => getMilestoneInfo(stats.value.totalSalesUSD))
 const displayedMilestones = computed(() =>
@@ -273,7 +287,14 @@ async function loadHistory() {
   try { const res = await api.getExchangeHistory(); history.value = res.result || [] } catch { history.value = [] }
 }
 
-onMounted(() => { loadStats(); loadBalance(); loadOnchain(); loadHistory() })
+onMounted(() => {
+  loadStats()
+  if (isLoggedIn.value) {
+    loadBalance()
+    loadOnchain()
+    loadHistory()
+  }
+})
 </script>
 
 <style scoped>

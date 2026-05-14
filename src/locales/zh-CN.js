@@ -5,6 +5,7 @@ export default {
     market: '市场',
     wallet: '钱包',
     signOut: '退出登录',
+    signIn: '登录',
   },
   login: {
     title: '登录',
@@ -157,5 +158,8 @@ export default {
   common: {
     connected: '已连接',
     loading: '加载中...',
+    login: '登录',
+    loginToView: '登录查看详情',
+    privateInfo: '请登录后查看资产信息',
   },
 }

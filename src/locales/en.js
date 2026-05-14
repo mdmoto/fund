@@ -5,6 +5,7 @@ export default {
     market: 'Market',
     wallet: 'Wallet',
     signOut: 'Sign out',
+    signIn: 'Sign in',
   },
   login: {
     title: 'Sign in',
@@ -157,5 +158,8 @@ export default {
   common: {
     connected: 'Connected',
     loading: 'Loading...',
+    login: 'Login',
+    loginToView: 'Login to view details',
+    privateInfo: 'Please login to view asset information',
   },
 }

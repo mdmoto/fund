@@ -42,23 +42,30 @@
         <LanguageSwitcher />
       </div>
 
-      <!-- User badge -->
-      <div class="user-badge">
-        <div class="user-avatar">{{ userInitial }}</div>
-        <div class="user-info">
-          <div class="user-name">{{ userName }}</div>
-          <div class="user-status">{{ t('common.connected') }}</div>
+      <!-- User badge & Logout / Login -->
+      <template v-if="isLoggedIn">
+        <div class="user-badge">
+          <div class="user-avatar">{{ userInitial }}</div>
+          <div class="user-info">
+            <div class="user-name">{{ userName }}</div>
+            <div class="user-status">{{ t('common.connected') }}</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Sign out — uses proper class, no inline style -->
-      <button class="nav-item nav-item-logout" @click="logout">
+        <button class="nav-item nav-item-logout" @click="logout">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {{ t('nav.signOut') }}
+        </button>
+      </template>
+      <router-link v-else to="/login" class="nav-item nav-item-login">
         <svg class="nav-icon" fill="none" viewBox="0 0 24 24">
-          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13.8 12H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        {{ t('nav.signOut') }}
-      </button>
+        {{ t('nav.signIn') || 'Sign In' }}
+      </router-link>
     </div>
   </aside>
 </template>
@@ -73,6 +80,7 @@ const { t } = useI18n()
 const router = useRouter()
 
 const user = JSON.parse(localStorage.getItem('mao_user') || '{}')
+const isLoggedIn = computed(() => !!localStorage.getItem('mao_token'))
 const userName = computed(() => user?.nickname || user?.username || 'User')
 const userInitial = computed(() => userName.value.charAt(0).toUpperCase())
 

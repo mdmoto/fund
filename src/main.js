@@ -14,7 +14,7 @@ const router = createRouter({
   routes: [
     { path: '/', redirect: '/dashboard' },
     { path: '/login', component: LoginView },
-    { path: '/dashboard', component: DashboardView, meta: { requiresAuth: true } },
+    { path: '/dashboard', component: DashboardView, meta: { requiresAuth: false } },
     { path: '/market', component: MarketView, meta: { requiresAuth: true } },
     { path: '/exchange', component: ExchangeView, meta: { requiresAuth: true } },
     { path: '/wallet', component: WalletView, meta: { requiresAuth: true } },
