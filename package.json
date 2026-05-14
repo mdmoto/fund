@@ -1,0 +1,28 @@
+{
+  "name": "maollar-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@solana/spl-token": "^0.4.14",
+    "@solana/web3.js": "^1.98.4",
+    "axios": "^1.16.0",
+    "bip39": "^3.1.0",
+    "bs58": "^6.0.0",
+    "ed25519-hd-key": "^2.0.0",
+    "lightweight-charts": "^5.2.0",
+    "vue": "^3.5.32",
+    "vue-i18n": "^11.4.0",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.6",
+    "vite": "^8.0.10",
+    "vite-plugin-node-polyfills": "^0.26.0"
+  }
+}
