@@ -18,9 +18,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'solana': ['@solana/web3.js', '@solana/spl-token'],
-          'vue-vendor': ['vue', 'vue-router'],
+        manualChunks(id) {
+          if (id.includes('@solana/web3.js') || id.includes('@solana/spl-token')) {
+            return 'solana';
+          }
+          if (id.includes('vue') || id.includes('vue-router')) {
+            return 'vue-vendor';
+          }
         }
       }
     }
