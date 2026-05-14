@@ -1,5 +1,6 @@
 <template>
-  <aside class="sidebar">
+  <div class="sidebar-overlay" :class="{ open: globalState.isSidebarOpen }" @click="globalState.isSidebarOpen = false"></div>
+  <aside class="sidebar" :class="{ open: globalState.isSidebarOpen }">
     <!-- ── Logo ──────────────────────── -->
     <div class="sidebar-logo">
       <div class="logo-icon">
@@ -74,6 +75,7 @@
 import { computed, defineComponent, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { globalState } from '../state.js'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 
 const { t } = useI18n()
@@ -89,6 +91,11 @@ function logout() {
   localStorage.removeItem('mao_user')
   router.push('/login')
 }
+
+// Close sidebar on navigation (mobile)
+router.afterEach(() => {
+  globalState.isSidebarOpen = false
+})
 
 /* SVG icon components — defined inline to avoid extra files */
 const IconDashboard = defineComponent({

@@ -1,5 +1,6 @@
 <template>
   <div class="app-shell">
+    <MobileHeader />
     <Sidebar />
     <main class="main-content">
       <div class="page-header flex justify-between items-center">
@@ -142,7 +143,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { api } from '../services/api.js'
 import { useI18n } from 'vue-i18n'
+import { globalState } from '../state.js'
 import Sidebar from '../components/Sidebar.vue'
+import MobileHeader from '../components/MobileHeader.vue'
 
 const { t } = useI18n()
 const walletAddress = ref(localStorage.getItem('mao_wallet') || '')
@@ -194,6 +197,10 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1.25fr 1fr;
   gap: 22px;
+}
+
+@media (max-width: 991px) {
+  .exchange-layout { grid-template-columns: 1fr; }
 }
 
 .swap-receive-amount {

@@ -1,5 +1,6 @@
 <template>
   <div class="app-shell">
+    <MobileHeader />
     <Sidebar />
     <main class="main-content">
       <div class="page-header">
@@ -115,7 +116,9 @@ import { ref, computed, onMounted } from 'vue'
 import { api } from '../services/api.js'
 import { FIBONACCI_MILESTONES, getMilestoneInfo, MAO_MINT, shortenAddr } from '../services/wallet.js'
 import { useI18n } from 'vue-i18n'
+import { globalState } from '../state.js'
 import Sidebar from '../components/Sidebar.vue'
+import MobileHeader from '../components/MobileHeader.vue'
 import PriceChart from '../components/PriceChart.vue'
 
 const { t } = useI18n()
@@ -172,6 +175,11 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
+}
+
+@media (max-width: 991px) {
+  .market-mid-grid { grid-template-columns: 1fr; }
+  .tokenomics-grid { grid-template-columns: 1fr; }
 }
 
 .tokenomics-value {

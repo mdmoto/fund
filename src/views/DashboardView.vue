@@ -1,5 +1,6 @@
 <template>
   <div class="app-shell">
+    <MobileHeader />
     <Sidebar />
     <main class="main-content">
       <div class="page-header flex justify-between items-center">
@@ -240,7 +241,9 @@ import { ref, computed, onMounted } from 'vue'
 import { api } from '../services/api.js'
 import { getMaoBalance, shortenAddr, getMilestoneInfo, FIBONACCI_MILESTONES } from '../services/wallet.js'
 import { useI18n } from 'vue-i18n'
+import { globalState } from '../state.js'
 import Sidebar from '../components/Sidebar.vue'
+import MobileHeader from '../components/MobileHeader.vue'
 import PriceChart from '../components/PriceChart.vue'
 
 const { t } = useI18n()

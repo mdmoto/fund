@@ -1,5 +1,6 @@
 <template>
   <div class="app-shell">
+    <MobileHeader />
     <Sidebar />
     <main class="main-content">
       <div class="page-header">
@@ -244,7 +245,9 @@ import { ref, onMounted } from 'vue'
 import { generateNewWallet, walletFromMnemonic, isPhantomInstalled, connectPhantom } from '../services/wallet.js'
 import { api } from '../services/api.js'
 import { useI18n } from 'vue-i18n'
+import { globalState } from '../state.js'
 import Sidebar from '../components/Sidebar.vue'
+import MobileHeader from '../components/MobileHeader.vue'
 
 const { t } = useI18n()
 
@@ -359,6 +362,10 @@ function copyAddr() {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
+}
+
+@media (max-width: 991px) {
+  .wallet-options-grid { grid-template-columns: 1fr; }
 }
 
 .wallet-option-card {
