@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig({
+  base: './',
   plugins: [vue(), nodePolyfills()],
   server: {
     port: 5173,
